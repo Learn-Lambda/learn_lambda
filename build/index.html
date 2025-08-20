@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Learn Lambda</title>
+    <script defer="defer" src="/static/js/main.73161799.js"></script>
+    <link href="/static/css/main.d226e228.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root" style="width: 100%; height: 100%"></div>
+  </body>
+  <style>
+    @import url(https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap);</style
+  ><style>
+    [contenteditable]:focus {
+      outline: 0 solid transparent;
+    }
+    .input-file {
+      position: relative;
+      display: inline-block;
+    }
+    .input-file-btn {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+      outline: 0;
+      text-decoration: none;
+      font-size: 36px;
+      vertical-align: middle;
+      color: rgb(255 255 255);
+      text-align: center;
+      border-radius: 4px;
+      background-color: #419152;
+      line-height: 22px;
+      height: 40px;
+      padding: 10px 20px;
+      box-sizing: border-box;
+      border: none;
+      margin: 0;
+      transition: background-color 0.2s;
+    }
+    .input-file-text {
+      padding: 0 10px;
+      line-height: 40px;
+      display: inline-block;
+    }
+    .input-file input[type="file"] {
+      position: absolute;
+      z-index: -1;
+      opacity: 0;
+      display: block;
+      width: 0;
+      height: 0;
+    }
+    .input-file input[type="file"]:focus + .input-file-btn {
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    .input-file:hover .input-file-btn {
+      background-color: #59be6e;
+    }
+    .input-file:active .input-file-btn {
+      background-color: #2e703a;
+    }
+    .input-file input[type="file"]:disabled + .input-file-btn {
+      background-color: #eee;
+    }
+  </style>
+</html>

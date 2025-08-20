@@ -1,0 +1,16 @@
+name: base_feature
+description: A brick to create Clean Architecture Feature
+
+version: 0.0.1
+
+# The following defines the environment for the current brick.
+# It includes the version of mason that the brick requires.
+environment:
+  mason: ">=0.1.0-dev.26 <0.1.0"
+
+vars:
+  name:
+    type: string
+    description: The feature name
+    default: my feature
+    prompt: What's your feature name (e.g. dance school)

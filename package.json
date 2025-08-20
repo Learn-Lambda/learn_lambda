@@ -1,0 +1,66 @@
+{
+  "name": "learn_lambda",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@coreui/react": "^5.4.1",
+    "@monaco-editor/react": "^4.7.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.46",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "@types/socket.io-client": "^3.0.0",
+    "@types/uuid": "^9.0.2",
+    "antd": "^4.24.15",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "dateformat": "^5.0.3",
+    "just-clone": "^6.2.0",
+    "mobx": "^6.10.0",
+    "mobx-react-lite": "^4.0.4",
+    "mobx-store-inheritance": "^1.0.6",
+    "pattern-matching-ts": "^2.0.0",
+    "react": "^18.2.0",
+    "react-activity-calendar": "^2.7.13",
+    "react-dom": "^18.2.0",
+    "react-resizable-panels": "^3.0.4",
+    "react-router-dom": "^6.18.0",
+    "react-scripts": "5.0.1",
+    "reflect-metadata": "^0.1.13",
+    "ts-pattern": "^5.1.1",
+    "typescript": "^4.9.5",
+    "uuid": "^11.0.5"
+  },
+  "scripts": {
+    "dev": "react-scripts start",
+    "build": "CI=false && react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "deploy": "serve -s build",
+    "prod": "pm2 serve build/ 3000 --name 'ui' --spa"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/dateformat": "^5.0.3"
+  }
+}
