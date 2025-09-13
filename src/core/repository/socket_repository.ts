@@ -10,7 +10,7 @@ export class SocketRepository {
 
     this.socket = socket;
     socket.connect();
-    socket.emit("auth", { jwt: jwt });
+    socket.emit("auth", { jwt: jwt, env: "web" });
     if (socket.connected) {
       return Result.ok(true);
     }

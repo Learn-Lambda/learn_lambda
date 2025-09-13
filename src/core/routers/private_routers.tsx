@@ -1,5 +1,8 @@
 import { Activity, ActivityPath } from "../../features/activiti/activity";
-import { TrainSettings, TrainSettingsPath } from "../../features/train_settings/train_settings";
+import {
+  TrainSettings,
+  TrainSettingsPath,
+} from "../../features/train_settings/train_settings";
 import { Tasks, TasksPath } from "../../features/tasks/tasks";
 import { Token, TokenPath } from "../../features/token/token";
 import { TrainPath, Train } from "../../features/train/train";
@@ -23,7 +26,7 @@ export const privateRouters: IRouter[] = [
     element: <TrainSettings />,
   },
   {
-    path: ActivityPath,
+    path: ActivityPath + ":userId",
     element: <Activity />,
   },
 ];

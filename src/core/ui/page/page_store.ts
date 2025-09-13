@@ -13,6 +13,7 @@ import { TasksPath } from "../../../features/tasks/tasks";
 import { TrainPath } from "../../../features/train/train";
 import { TrainSettingsPath } from "../../../features/train_settings/train_settings";
 import { ActivityPath } from "../../../features/activiti/activity";
+import { AuthorizationLocalStorageRepository } from "../../../features/authorization/authorization_repository";
 
 interface Page {
   path: string;
@@ -49,6 +50,8 @@ export class PageStore extends NavigateState {
   currentTask?: {
     tasks?: any[];
   } = undefined;
+  authorizationLocalStorageRepository: AuthorizationLocalStorageRepository =
+    new AuthorizationLocalStorageRepository();
 
   constructor() {
     super();
@@ -57,6 +60,15 @@ export class PageStore extends NavigateState {
   user?: IUser = undefined;
   async init(navigate?: NavigateFunction): Promise<any> {
     super.init(navigate);
+    this.authorizationLocalStorageRepository.getUser().map((user) => {
+      this.pages = this.pages.map((el) => {
+        if (el.path === ActivityPath) {
+          el.path += user.id;
+        }
+        return el;
+      });
+    });
+
     (await this.pageHttpRepository.getCurrentCollection()).map((el) => {
       this.currentTask = { tasks: el.currentTasksIds };
     });
