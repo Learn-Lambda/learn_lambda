@@ -8,6 +8,7 @@ import { ActivityStore } from "./activity_store";
 import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
+
 export const ActivityPath = "/activity/";
 export const Activity = observer(() => {
   const { userId } = useParams();
@@ -90,6 +91,7 @@ const TypeStatisticUsage: React.FC<{
   editCallback: (target: number, method: string) => void;
 }> = ({ type, methods, editCallback }) => {
   const [m, setM] = useState(methods);
+  const [isDisabled, setDisabled] = useState(true);
   const setEditable = () => {
     setM(
       m.map((el) => {
@@ -103,7 +105,7 @@ const TypeStatisticUsage: React.FC<{
       <div
         style={{
           width: "calc(100% - 20px)",
-          backgroundColor: "#EFF4FB",
+          backgroundColor:   "#EFF4FB",
           height: 39,
           marginRight: 10,
           marginLeft: 10,
@@ -120,9 +122,16 @@ const TypeStatisticUsage: React.FC<{
             // paddingTop: 8,
             marginLeft: 10,
             marginRight: 5,
+            // color: isDisabled ? "#aeaeae" : "black",
           }}
         />
-        <div onClick={() => setEditable()} style={{ cursor: "pointer" }}>
+        <div
+          onClick={() => setEditable()}
+          style={{
+            cursor: "pointer",
+            // display: isDisabled ? "none" : undefined,
+          }}
+        >
           <Icon type={IconType.edit} size={15} />
         </div>
       </div>
@@ -162,7 +171,7 @@ const MethodStatistic: React.FC<{
   editCallback,
 }) => {
   const [t, setT] = useState(target);
-  const plusClick = () => {
+   const plusClick = () => {
     if (t === 99) {
       return;
     }
@@ -177,7 +186,13 @@ const MethodStatistic: React.FC<{
     editCallback(t - 1);
   };
   return (
-    <>
+    <div
+      style={{
+        // backgroundColor: isDisabled ? "red" : undefined,
+        marginLeft: 10,
+        marginRight: 10,
+      }}
+    >
       <div style={{ height: 10 }} />
       <div
         style={{
@@ -323,7 +338,7 @@ const MethodStatistic: React.FC<{
           <Icon type={IconType.aiSmall} />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 function methodMapper(method: string): string {

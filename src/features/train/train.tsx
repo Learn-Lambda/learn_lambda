@@ -9,8 +9,9 @@ import { Complexity } from "../../core/ui/complexity/complexity";
 import { useEffect, useRef } from "react";
 import { InputV2 } from "../../core/ui/input/input_v2";
 import { Editor } from "@monaco-editor/react";
-import { Loader } from "../../core/ui/loader/loader";
-import { Button } from "../../core/ui/button/Button";
+import { Value } from "./task_solution_result";
+import { useNavigate } from "react-router-dom";
+import { ViewOtherSolutionPath } from "../view_other_solutions/view_other_solutions";
 
 export const TrainPath = "/train/last/task";
 
@@ -19,7 +20,6 @@ export const Train = observer(() => {
   const ref = useRef<HTMLDivElement>(null);
   const refV2 = useRef<HTMLDivElement>(null);
   const refV3 = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     if (refV3.current !== null) {
@@ -85,24 +85,22 @@ export const Train = observer(() => {
                         >
                           {store.loadTags ? (
                             <div style={{ display: "flex" }}>
-                              {["Преобразование типов", "Array.map", "Array"]
-                                .repeat(1)
-                                .map((el) => (
-                                  <div
-                                    style={{
-                                      backgroundColor: "#E2E8F0",
-                                      paddingBottom: 4,
-                                      paddingTop: 4,
-                                      paddingLeft: 10,
-                                      paddingRight: 10,
-                                      marginLeft: 5,
-                                      height: "min-content",
-                                      width: "max-content",
-                                    }}
-                                  >
-                                    <TextV2 text={el} color="#64748B" />
-                                  </div>
-                                ))}
+                              {store.task?.tags.map((el) => (
+                                <div
+                                  style={{
+                                    backgroundColor: "#E2E8F0",
+                                    paddingBottom: 4,
+                                    paddingTop: 4,
+                                    paddingLeft: 10,
+                                    paddingRight: 10,
+                                    marginLeft: 5,
+                                    height: "min-content",
+                                    width: "max-content",
+                                  }}
+                                >
+                                  <TextV2 text={el} color="#64748B" />
+                                </div>
+                              ))}
                             </div>
                           ) : (
                             <></>
@@ -175,6 +173,7 @@ export const Train = observer(() => {
                                 <Icon type={IconType.group} color="#212B36" />
                                 <div style={{ width: 10 }} />
                                 <TextV2 text="Описание задачи" size={16} />
+                                <div style={{ height: 27 }} />
                               </div>
                               <div
                                 style={{
@@ -298,7 +297,13 @@ export const Train = observer(() => {
                               }}
                             ></div>
                           </PanelResizeHandle>
-                          <ResultTest />
+                          {store.isViewResultTest ? (
+                            <>
+                              <ResultTest store={store} />
+                            </>
+                          ) : (
+                            <></>
+                          )}
                         </PanelGroup>
                       </Panel>
                     </PanelGroup>
@@ -314,6 +319,7 @@ export const Train = observer(() => {
 });
 
 export const Code: React.FC<{ store: TrainStore }> = observer(({ store }) => {
+  const n = useNavigate();
   return (
     <>
       <Panel>
@@ -328,17 +334,47 @@ export const Code: React.FC<{ store: TrainStore }> = observer(({ store }) => {
                 <TextV2 text="Код" size={16} />
               </div>
             </div>
-            <TextV2
-              onClick={() => store.sendSolutions()}
-              text="Отправить Решение"
-              style={{
-                border: "1px solid",
-                position: "relative",
-                top: -5,
-                left: -7,
-                cursor: "pointer",
-              }}
-            />
+            <div style={{ display: "flex" }}>
+              <TextV2
+                onClick={() => store.sendSolutions()}
+                text="Отправить Решение"
+                style={{
+                  border: "1px solid",
+                  position: "relative",
+                  top: -5,
+                  left: -7,
+                  alignContent: "center",
+                  cursor: "pointer",
+                }}
+              />
+
+              {store.allTestIsAsserts ?? false ? (
+                <>
+                  <div style={{ width: 5 }}></div>
+                  <TextV2
+                    onClick={() =>
+                      n(ViewOtherSolutionPath + `${store.task?.id}`)
+                    }
+                    text="Перейти к другим решениям"
+                    style={{
+                      // width: 20,
+                      // height: 25,
+                      padding: 5,
+                      alignContent: "center",
+                      borderRadius: 5,
+                      backgroundColor: "green",
+                      color: "white",
+                      position: "relative",
+                      top: -5,
+                      left: -7,
+                      cursor: "pointer",
+                    }}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
           </div>
 
           <div
@@ -372,39 +408,50 @@ export const Code: React.FC<{ store: TrainStore }> = observer(({ store }) => {
   );
 });
 
-export const ResultTest = () => {
-  return (
-    <>
-      <Panel>
-        <div style={{ width: "100%", height: 51 }}>
-          <div style={{ height: 10 }} />
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ width: 10 }} />
-            <Icon type={IconType.resultTests} color="#212B36" />
-            <div style={{ width: 10 }} />
-            <TextV2 text="Резултаты тестов" size={16} />
+export const ResultTest: React.FC<{ store: TrainStore }> = observer(
+  ({ store }) => {
+    return (
+      <>
+        <Panel>
+          <div style={{ width: "100%", height: 51 }}>
+            <div style={{ height: 10 }} />
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ width: 10 }} />
+              <Icon type={IconType.resultTests} color="#212B36" />
+              <div style={{ width: 10 }} />
+              <TextV2 text="Резултаты тестов" size={16} />
+            </div>
+            <div
+              style={{
+                width: "100%",
+                height: 1,
+                backgroundColor: "#E2E8F0",
+              }}
+            ></div>
           </div>
           <div
             style={{
-              width: "100%",
-              height: 1,
-              backgroundColor: "#E2E8F0",
+              width: "calc(100% - 30px)",
+              height: "calc(100% - 60px)",
+              background: "rgb(239, 244, 251)",
+              borderRadius: 5,
+              marginLeft: 15,
+              marginRight: 15,
+              marginBottom: 15,
+              padding: 5,
             }}
-          />
-        </div>
-        <div
-          style={{
-            width: "calc(100% - 30px)",
-            height: "calc(100% - 60px)",
-            background: "rgb(239, 244, 251)",
-            borderRadius: 5,
-            marginLeft: 15,
-            marginRight: 15,
-            marginBottom: 15,
-            padding: 5,
-          }}
-        ></div>
-      </Panel>
-    </>
-  );
-};
+          >
+            {store.taskSolutionResult?.map((el) => (
+              <div style={{ color: el.value.status ? "green" : "red" }}>
+                {el.value.status ? "OK" : "ERR"}{" "}
+                {taskSolutionResultMapper(el.value)}
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </>
+    );
+  }
+);
+const taskSolutionResultMapper = (value: Value) =>
+  `ожидалось ${value.theResultWasExpected} получено ${value.theResultWasObtained}`;
