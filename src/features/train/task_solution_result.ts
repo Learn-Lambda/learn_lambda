@@ -4,8 +4,8 @@ export interface TaskSolutionResult {
 
 export interface Value {
   functionName: string;
-  wasLaunchedWithArguments: number[];
-  theResultWasObtained: number;
-  theResultWasExpected: number;
+  wasLaunchedWithArguments: any;
+  theResultWasObtained: any;
+  theResultWasExpected: any;
   status: boolean;
 }

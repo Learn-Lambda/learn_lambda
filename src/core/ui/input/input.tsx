@@ -19,7 +19,6 @@ export const Input: React.FC<{
   useEffect(() => {
     ref.current?.addEventListener("focus", () => {
       setFocus(true);
-      console.log("      setFocus(true);");
     });
 
     ref.current?.addEventListener("blur", () => {

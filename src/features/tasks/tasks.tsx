@@ -8,6 +8,7 @@ import { Switcher } from "../../core/ui/switcher/switcher";
 import { Tag } from "./ui/tag";
 import { useStore } from "../../core/helper/use_store";
 import { TasksStore } from "./tasks_store";
+import { Complexity } from "../../core/ui/complexity/complexity";
 
 export const TasksPath = "/tasks";
 export const Tasks = observer(() => {
@@ -61,52 +62,12 @@ export const Tasks = observer(() => {
                     }}
                   >
                     <TextV2 text="Сложность" color="#64748B" size={16} />
+                    
                     <div
-                      style={{
-                        width: 56,
-                        height: 30,
-                        background: "#E2E8F0",
-                        borderRadius: 30,
-                        alignContent: "center",
-                        // paddingLeft: 10,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
+                      onClick={() => store.apllyDificultyFilter()}
+                      style={{ cursor: "pointer" }}
                     >
-                      <div
-                        style={{
-                          borderRadius: 90,
-
-                          width: 9,
-                          height: 9,
-                          background: "#8A99AF",
-                          boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.1)",
-                        }}
-                      />
-                      <div style={{ width: 2 }} />
-                      <div
-                        style={{
-                          borderRadius: 90,
-
-                          width: 9,
-                          height: 9,
-                          background: "#8A99AF",
-                          boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.1)",
-                        }}
-                      />
-                      <div style={{ width: 2 }} />
-
-                      <div
-                        style={{
-                          borderRadius: 90,
-
-                          width: 9,
-                          height: 9,
-                          background: "#8A99AF",
-                          boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.1)",
-                        }}
-                      />
+                      <Complexity complexity={store.complexity ?? 0} />
                     </div>
                   </div>
                   <div style={{ height: 22 }} />
@@ -125,10 +86,8 @@ export const Tasks = observer(() => {
                   >
                     <TextV2 text="Учитывать план" color="#64748B" />
                     <Switcher
-                      isOn={true}
-                      onToggle={function (): void {
-                        // throw new Error("Function not implemented.");
-                      }}
+                      isOn={store.planSolutions}
+                      onToggle={() => store.planSolutionsFilterApply()}
                     />
                   </div>
                   <div style={{ height: 22 }} />
@@ -147,10 +106,8 @@ export const Tasks = observer(() => {
                   >
                     <TextV2 text="Решенные через ИИ" color="#64748B" />
                     <Switcher
-                      isOn={true}
-                      onToggle={function (): void {
-                        // throw new Error("Function not implemented.");
-                      }}
+                      isOn={store.aiSolutions}
+                      onToggle={() => store.aiSolutionsFilterApply()}
                     />
                   </div>
                   <div style={{ height: 22 }} />
@@ -226,7 +183,11 @@ export const Tasks = observer(() => {
                         style={{
                           height: 54,
                           alignContent: "center",
-                          background: index.isEven() ? "#EFF4FB" : "#FFFFFF",
+                          background: store.currentTasksIds?.includes(el.id)
+                            ? "rgb(28, 36, 52)"
+                            : index.isEven()
+                            ? "#EFF4FB"
+                            : "#FFFFFF",
                           display: "flex",
                           justifyContent: "space-between",
                           alignItems: "center",
@@ -234,15 +195,38 @@ export const Tasks = observer(() => {
                       >
                         <div style={{ display: "flex" }}>
                           <div style={{ width: 10 }} />
-                          <TextV2 text={el.name} />
+                          <TextV2
+                            text={el.name}
+                            color={
+                              store.currentTasksIds?.includes(el.id)
+                                ? "white"
+                                : undefined
+                            }
+                          />
                         </div>
                         <div style={{ display: "flex" }}>
-                          <TextV2
-                            onClick={() => store.addTaskToCollection(el.id)}
-                            text="+"
-                            size={22}
-                            style={{ cursor: "pointer" }}
-                          />
+                          {store.currentTasksIds?.includes(el.id) ? (
+                            <>
+                              <TextV2
+                                onClick={() =>
+                                  store.removeTaskToCollection(el.id)
+                                }
+                                text="-"
+                                size={22}
+                                style={{ cursor: "pointer", color: "white" }}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <TextV2
+                                onClick={() => store.addTaskToCollection(el.id)}
+                                text="+"
+                                size={22}
+                                style={{ cursor: "pointer" }}
+                              />
+                            </>
+                          )}
+
                           <div style={{ width: 10 }} />
                         </div>
                       </div>
@@ -257,3 +241,5 @@ export const Tasks = observer(() => {
     />
   );
 });
+
+

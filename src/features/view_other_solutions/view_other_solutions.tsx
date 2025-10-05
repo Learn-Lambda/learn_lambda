@@ -2,22 +2,33 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../core/helper/use_store";
 import { ViewOtherSolutionStore } from "./view_other_solutions_store";
 import { Page } from "../../core/ui/page/Page";
-import { useEffect, useState } from "react";
+import { LegacyRef, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { TextV2 } from "../../core/ui/text/text";
 import { Complexity } from "../../core/ui/complexity/complexity";
 import { TrainPath } from "../train/train";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { okaidia } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { Icon, IconType } from "../../core/ui/icon/icon";
+import Popover from "../../core/ui/popover/popover";
 export const ViewOtherSolutionPath = "/other/solution/";
 
 export const ViewOtherSolution = observer(() => {
   const store = useStore(ViewOtherSolutionStore);
+  const [width, setWidth] = useState(0);
+  const ref = useRef<HTMLDivElement>();
   const { id } = useParams();
   const n = useNavigate();
   useEffect(() => {
     store.initParam(id as string);
+    syncWidth();
   }, []);
+
+  const syncWidth = () => {
+    if (ref.current) {
+      setWidth(ref.current.clientWidth);
+    }
+  };
   return (
     <Page
       pageStore={store}
@@ -26,6 +37,7 @@ export const ViewOtherSolution = observer(() => {
           <Card
             children={
               <div
+                ref={ref as any}
                 style={{
                   display: "flex",
                   height: "100%",
@@ -73,18 +85,53 @@ export const ViewOtherSolution = observer(() => {
 
           <div style={{ height: 50 }} />
           <div style={{ width: 100 }}>
-            {store.solutions
-              ?.filter((el, i) => i === 1) 
-              .map((el) => (
-                // <SyntaxHighlighter
-                //   customStyle={{ width: "calc(100% - 80px)" }}
-                //   language="typescript"
-                //   style={okaidia}
-                // >
-                //   {"123"}
-                // </SyntaxHighlighter>
-                <div style={{ width: 100 }}>132</div>
-              ))}
+            {store.solutions?.map((el) => (
+              <div
+                style={{
+                  width: width,
+                  backgroundColor: "#1c2434",
+                  borderRadius: 5,
+                  marginTop: 5,
+                }}
+              >
+                <Popover
+                  content={
+                    <TextV2 text="Сколько людей решило задачу таким алгоритмом" />
+                  }
+                  children={
+                    <div
+                      style={{
+                        display: "flex",
+                        cursor: "pointer",
+                        paddingLeft: 20,
+                        paddingTop: 10,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Icon type={IconType.users} />
+                      <div style={{ width: 5 }} />
+                      <TextV2 text="444" color="white" />
+                    </div>
+                  }
+                />
+
+                <div
+                  style={{
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                    paddingBottom: 20,
+                  }}
+                >
+                  <SyntaxHighlighter
+                    style={Object.assign(oneDark, { width: "80vw" })}
+                    language={"typescript"}
+                    showLineNumbers
+                  >
+                    {el.code}
+                  </SyntaxHighlighter>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       }

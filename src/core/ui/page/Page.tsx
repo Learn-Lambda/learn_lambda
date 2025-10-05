@@ -21,9 +21,12 @@ export const Page: React.FC<{
   const location = useLocation();
   return (
     <div style={{ width: "100%", height: "100%", display: "flex" }}>
+      <div style={{ width: 52 }} />
       <div
         style={{
           width: 52,
+          position: "fixed",
+
           height: "100%",
           backgroundColor: "#1C2434",
           textAlign: "center",
@@ -86,16 +89,23 @@ export const Page: React.FC<{
                 alignItems: "center",
               }}
             >
-              {store.currentTask?.tasks === undefined ||
-              store.currentTask?.tasks.isEmpty() ? (
-                <TextV2 text="zero" color="white" />
+              {store.currentTask?.tasks === undefined ? (
+                <><Loader/> </>
               ) : (
-                <TextV2
-                  text={String(store.currentTask?.tasks.length)}
-                  color="white"
-                  style={{ paddingRight: 4 }}
-                />
+                <>
+                  {store.currentTask?.tasks === undefined ||
+                  store.currentTask?.tasks.isEmpty() ? (
+                    <TextV2 text="zero" color="white" />
+                  ) : (
+                    <TextV2
+                      text={String(store.currentTask?.tasks.length)}
+                      color="white"
+                      style={{ paddingRight: 4 }}
+                    />
+                  )}
+                </>
               )}
+
               {store.currentTask?.tasks === undefined ||
               store.currentTask?.tasks.isEmpty() ? (
                 <></>

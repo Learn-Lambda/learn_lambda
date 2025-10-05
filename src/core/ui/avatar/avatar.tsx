@@ -57,7 +57,6 @@ export const Avatar: React.FC<{ name: string; size: number }> = ({
         const getColor = () =>
           colors.at(Math.floor(Math.random() * colors.length));
 
-        console.log(getColor());
         ctx.fillStyle = getColor() as string;
 
         for (let i = 0; i < m.length; i++) {

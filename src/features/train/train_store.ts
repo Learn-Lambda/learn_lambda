@@ -7,6 +7,7 @@ import { IsString } from "class-validator";
 import { ValidationModel } from "../../core/model/validation_model";
 import { TaskSolutionResult } from "./task_solution_result";
 import { message } from "antd";
+import { ViewOtherSolutionPath } from "../view_other_solutions/view_other_solutions";
 export interface ITask {
   id: number;
   name: string;
@@ -23,14 +24,7 @@ export interface ITask {
 
 export class Solution extends ValidationModel {
   @IsString({ message: "Введите решение задачи в поле код" })
-  code: string = `export const p = (arg: number, arg2: number) => {
-  return arg * arg2;
-};
-
-console.log(p(1, 2)); //2
-console.log(p(1, 3)); //3
-console.log(p(1, 4)); //4
-console.log(p(2, 2)); //4`;
+  code: string;
   taskNumber: number;
 }
 
@@ -40,6 +34,7 @@ export class TrainStore extends FormState<Solution> {
   isViewResultTest = false;
   task?: ITask;
   allTestIsAsserts?: boolean;
+  activeCase = 0;
   constructor() {
     super();
     makeAutoObservable(this);
@@ -47,31 +42,62 @@ export class TrainStore extends FormState<Solution> {
   trainLocalStorageRepository = new TrainLocalStorageRepository();
   trainRepository = new TrainRepository();
   viewModel: Solution = new Solution();
-  taskSolutionResult?: TaskSolutionResult[];
+  taskSolutionResult: TaskSolutionResult[] = [];
+  emptyPage = false;
+  setActiveCase = (index: number): void => {
+    this.activeCase = index;
+  };
+
+  isError = () =>
+    this.taskSolutionResult
+      ?.map((el) => el.value.status)
+      .filter((e) => e === true)
+      .isEmpty();
   async init(navigate?: NavigateFunction): Promise<any> {
     super.init(navigate);
-    await this.mapOk("task", this.trainRepository.getLastTask());
+    // await this.mapOk("task", this.trainRepository.getLastTask());
+    this.isLoading = true;
+    (await this.trainRepository.getLastTask()).fold(
+      (s) => {
+        this.task = s;
+        this.isLoading = false;
+      },
+      (error) => {
+        this.emptyPage = true;
+        this.isLoading = false;
+      }
+    );
   }
-  async sendSolutions() {
+  sendSolutions = async () => {
     this.viewModel.taskNumber = Number(this.task?.id);
     (await this.viewModel.validMessage<Solution>()).map(async (solution) => {
-      this.isViewResultTest = true;
       (await this.trainRepository.sendSolutions(solution)).fold(
         (taskSolutionResult) => {
+          // @ts-ignore
+          if (
+            taskSolutionResult[0] != undefined &&
+            // @ts-ignore
+            taskSolutionResult[0]["error"] !== undefined
+          ) {
+            this.isViewResultTest = false;
+
+            message.error("Ошибка исполнения ");
+            return;
+          }
+
+          this.isViewResultTest = true;
+
           this.taskSolutionResult = taskSolutionResult;
-          this.taskSolutionResult.forEach((el) => {
-            if (this.allTestIsAsserts !== false) {
-              this.allTestIsAsserts = el.value.status;
-            }
-          });
+          this.allTestIsAsserts = !this.isError();
+          this.navigate?.(ViewOtherSolutionPath + this.viewModel.id);
         },
         (e) => {
           message.error(e.message);
         }
       );
     });
-  }
-  inputHelper(text: string) {
+  };
+  inputHelper = (text: string) => {
     const result = text.search("\n");
 
     if (result === 0 || result === -1) {
@@ -81,5 +107,5 @@ export class TrainStore extends FormState<Solution> {
 
     this.inputHeight = result * 40;
     return;
-  }
+  };
 }

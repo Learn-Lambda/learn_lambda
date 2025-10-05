@@ -7,7 +7,7 @@ import { TextV2 } from "../../core/ui/text/text";
 import { ActivityStore } from "./activity_store";
 import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import { toJS } from "mobx";
+import { ActivityHeatmap } from "react-activity-heatmap";
 
 export const ActivityPath = "/activity/";
 export const Activity = observer(() => {
@@ -26,6 +26,8 @@ export const Activity = observer(() => {
       children={
         <>
           <div style={{ paddingTop: 50, marginLeft: 80 }}>
+            
+         
             <TextV2
               text="Статистика изучения типов данных"
               style={{
@@ -105,7 +107,7 @@ const TypeStatisticUsage: React.FC<{
       <div
         style={{
           width: "calc(100% - 20px)",
-          backgroundColor:   "#EFF4FB",
+          backgroundColor: "#EFF4FB",
           height: 39,
           marginRight: 10,
           marginLeft: 10,
@@ -171,7 +173,7 @@ const MethodStatistic: React.FC<{
   editCallback,
 }) => {
   const [t, setT] = useState(target);
-   const plusClick = () => {
+  const plusClick = () => {
     if (t === 99) {
       return;
     }

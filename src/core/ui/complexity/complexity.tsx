@@ -1,10 +1,14 @@
-export const Complexity: React.FC<{ complexity: number }> = ({
-  complexity,
-}) => {
-  
+export const Complexity: React.FC<{
+  complexity: number;
+
+  onClick?: (index:number) => void;
+}> = ({ complexity, onClick }) => {
   const computed = () => {
+    if (complexity === 0) {
+      return ["#8A99AF", "#8A99AF", "#8A99AF"];
+    }
     if (complexity === 1) {
-      return ['rgba(16, 185, 129, 0.99)', "#8A99AF", "#8A99AF"];
+      return ["rgba(16, 185, 129, 0.99)", "#8A99AF", "#8A99AF"];
     }
     if (complexity === 2) {
       return ["#F0950C", "#F0950C", "#8A99AF"];
@@ -12,7 +16,7 @@ export const Complexity: React.FC<{ complexity: number }> = ({
     if (complexity === 3) {
       return ["#FB5454", "#FB5454", "#FB5454"];
     }
-    return []
+    return [];
   };
 
   return (
@@ -28,8 +32,9 @@ export const Complexity: React.FC<{ complexity: number }> = ({
         alignItems: "center",
       }}
     >
-      {computed().map((el) => (
+      {computed().map((el, index) => (
         <div
+          onClick={() => onClick?.(index)}
           style={{
             width: 9,
             height: 9,

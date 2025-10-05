@@ -13,11 +13,17 @@ export class ActivityStore extends NavigateState {
   activityHttpRepository = new ActivityHttpRepository();
   authorizationLocalStorageRepository =
     new AuthorizationLocalStorageRepository();
+
+   
+ 
   constructor() {
     super();
     makeAutoObservable(this);
   }
+
+  
   initParam = async (id: string) => {
+ 
     await this.mapOk(
       "statisticTypesUsage",
       this.activityHttpRepository.getUserStatisticTypesUsage(Number(id))

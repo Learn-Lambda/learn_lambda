@@ -12,17 +12,45 @@ export interface ITag {
 }
 
 export class TasksStore extends NavigateState {
+  apllyDificultyFilter = (): void => {
+    if (this.complexity === 3) {
+      this.complexity = 0;
+      return;
+    }
+    this.complexity += 1;
+  };
   tasks?: Pagination<Task>;
+  currentTasksIds: number[] = [];
   taskHttpRepository = new TaskHttpRepository();
   tags: ITag[] = [];
+  aiSolutions = false;
+  complexity = 0;
+  planSolutions = false;
   constructor() {
     super();
     makeAutoObservable(this);
   }
+
+  planSolutionsFilterApply = () => {
+    this.planSolutions = !this.planSolutions;
+  };
+
+  aiSolutionsFilterApply = () => {
+    this.aiSolutions = !this.aiSolutions;
+  };
   async init(navigate?: NavigateFunction): Promise<any> {
     super.init(navigate);
     await this.mapOk("tasks", this.taskHttpRepository.getTasks(1));
+    (await this.taskHttpRepository.getCurrentCollection()).map((el) => {
+      this.currentTasksIds = el.currentTasksIds;
+    });
   }
-  addTaskToCollection = (id: number) =>
-    this.taskHttpRepository.addTaskMainCollection(id);
+  addTaskToCollection = async (id: number) => {
+    await this.taskHttpRepository.addTaskMainCollection(id);
+    this.currentTasksIds?.push(id);
+  };
+  removeTaskToCollection = async (id: number) => {
+    this.currentTasksIds = this.currentTasksIds.filter((el) => el !== id);
+    await this.taskHttpRepository.removeTaskCollection(id);
+  };
 }
