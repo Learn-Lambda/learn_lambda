@@ -45,8 +45,8 @@ export const Page: React.FC<{
           }}
         />
         <div style={{ height: 50 }} />
-        {store.pages.map((el) => (
-          <div onClick={() => store.navigate?.(el.path)}>
+        {store.pages.map((el,index) => (
+          <div key={index} onClick={() => store.navigate?.(el.path)}>
             <Icon
               type={el.iconType}
               color={

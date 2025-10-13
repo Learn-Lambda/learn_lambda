@@ -18,7 +18,7 @@
     /* Для всех элементов скроллбар будет тонкий и серый */
     * {
       scrollbar-width: thin;
-      scrollbar-color: #1c2434 #ddd
+      scrollbar-color: #1c2434 #ddd;
     }
 
     *::-webkit-scrollbar {
@@ -39,6 +39,7 @@
       width: 100vw;
       height: 100vh;
       margin: 0px;
+      background-color: #f1f5f9;
       overflow-x: hidden;
     }
     [contenteditable]:focus {
@@ -104,6 +105,16 @@
     /* Disabled */
     .input-file input[type="file"]:disabled + .input-file-btn {
       background-color: #eee;
+    }
+    .hideScroll {
+      overflow: auto;
+      scrollbar-width: none; /* Firefox */
+    }
+
+    /* Chrome, Safari, Edge */
+    .hideScroll::-webkit-scrollbar {
+      display: none;
+      width: 0;
     }
   </style>
 </html>

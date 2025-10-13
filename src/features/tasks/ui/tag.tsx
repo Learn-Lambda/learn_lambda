@@ -1,24 +1,37 @@
+import { useState } from "react";
 import { TextV2 } from "../../../core/ui/text/text";
-import { ITag } from "../tasks_store";
 
-export const Tag: React.FC<{ tag: ITag }> = ({tag}) => {
+export const Tag: React.FC<{
+  tag: string;
+  selectCallback: (isSelect: boolean) => void;
+  isActive?: boolean;
+}> = ({ tag, selectCallback, isActive }) => {
+  const [isSelect, setSelect] = useState(isActive ?? false);
+
   return (
     <>
       <div
+        onClick={() => {
+          setSelect(!isSelect);
+          selectCallback(isSelect);
+        }}
         style={{
+          cursor: "pointer",
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
-          // width: 79,
+
           height: 22,
-          background: "rgba(100, 116, 139, 0.8)",
+          background: isSelect
+            ? "rgb(0 0 0 / 80%)"
+            : "rgba(100, 116, 139, 0.8)",
           borderRadius: "3px",
           width: "max-content",
         }}
       >
         <TextV2
-          text={tag.name}
+          text={tag}
           style={{
             paddingLeft: 5,
             paddingRight: 5,

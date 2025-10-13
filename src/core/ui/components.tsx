@@ -26,6 +26,8 @@ export const Components = () => (
       <Input icon={IconType.email} label="email" error={"is not empty"} />
       <div style={{ height: 20 }} />
     </div>
-    <Pagination />
+    <Pagination
+      pagination={{ totalCount: 0, totalPages: 0, currentPage: 0, data: [] }}
+    />
   </>
 );

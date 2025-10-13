@@ -10,4 +10,6 @@ export interface Task {
   numberOfTimesSolved: number;
   isOpen: boolean;
   tags: any[];
+  usersWhoSolvedTheTask:number[];
+  usersWhoSolvedTaskAiHelp:number[];
 }

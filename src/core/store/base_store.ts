@@ -5,7 +5,7 @@ import { message } from "antd";
 import { plainToInstance, type ClassConstructor } from "class-transformer";
 import { CrudHttpRepository, HttpError } from "../repository/http_repository";
 import { ValidationModel } from "../model/validation_model";
-import type { Pagination } from "../model/pagination";
+import type { IPagination } from "../model/pagination";
 
 export type CoreError = HttpError | Error;
 
@@ -170,7 +170,7 @@ export abstract class CrudFormStore<
   R extends CrudHttpRepository<V>
 > extends FormState<V> {
   models = (): V[] | undefined => this.page?.data;
-  page?: Pagination<V>;
+  page?: IPagination<V>;
   abstract repository: R;
   async init(navigate?: NavigateFunction): Promise<any> {
     await this.mapOk("page", this.read());
