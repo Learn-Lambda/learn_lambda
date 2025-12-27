@@ -6,7 +6,7 @@ export const DateExtensions = () => {
   }
   if (Date.prototype.formatDate === undefined) {
     Date.prototype.formatDate = function () {
-      return `${this.getFullYear()}.${this.getMonth()}.${this.getDay()} ${this.getHours()}:${this.getMinutes()}`;
+      return `${this.getFullYear()}.${this.getMonth()}.${this.getDay()}`;
     };
   }
 };

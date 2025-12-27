@@ -66,7 +66,7 @@ const Popover: React.FC<{
             borderRadius: 4,
             padding: "8px 12px",
             zIndex: 1000,
-            minWidth: 150,
+            minWidth: 200,
           }}
         >
           {content}

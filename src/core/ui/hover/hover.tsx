@@ -18,7 +18,7 @@ export const Hover: React.FC<HoverProps> = ({
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
-
+    element.style.backgroundColor = defaultColor;
     const handleMouseEnter = () => {
       element.style.backgroundColor = hoverColor;
       element.style.cursor = "pointer";
@@ -39,12 +39,10 @@ export const Hover: React.FC<HoverProps> = ({
     };
   }, [hoverColor, defaultColor]);
 
-  // Клонируем элемент и прикрепляем ref
 
   return (
     <div style={style} ref={ref}>
       {children}
     </div>
   );
-  //   return React.cloneElement(children, { ref });
 };

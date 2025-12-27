@@ -13,6 +13,7 @@ import { Pagination } from "../../core/ui/pagination/pagination";
 export const TasksPath = "/tasks";
 export const Tasks = observer(() => {
   const store = useStore(TasksStore);
+
   return (
     <Page
       pageStore={store}
@@ -45,15 +46,17 @@ export const Tasks = observer(() => {
                   overflow: "scroll",
                 }}
               >
-                {store.tags.map((el, i) => (
-                  <div key={i} style={{ padding: 5 }}>
-                    <Tag
-                      tag={el.name}
-                      isActive={store.tagsQuery.includes(el.name)}
-                      selectCallback={() => store.selectTags(el.value)}
-                    />
-                  </div>
-                ))}
+                {store.tags.map((el, i) => {
+                  return (
+                    <div key={i} style={{ padding: 5 }}>
+                      <Tag
+                        tag={el.name}
+                        isActive={store.tagsQuery.includes(el.value)}
+                        selectCallback={() => store.selectTags(el.value)}
+                      />
+                    </div>
+                  );
+                })}
               </div>
               <div
                 style={{

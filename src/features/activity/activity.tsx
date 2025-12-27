@@ -7,15 +7,20 @@ import { TextV2 } from "../../core/ui/text/text";
 import { ActivityStore } from "./activity_store";
 import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import { ActivityHeatmap } from "react-activity-heatmap";
-
+import { CalendarGit } from "../../core/ui/activity_calendar/activity_calendar";
+const activities = [
+  { date: new Date("2025-01-01"), count: 5 },
+  { date: new Date("2025-01-02"), count: 5 },
+  { date: new Date("2025-12-30"), count: 5 },
+];
+const years = [2024, 2025];
 export const ActivityPath = "/activity/";
 export const Activity = observer(() => {
   const { userId } = useParams();
   const store = useStore(ActivityStore);
   useEffect(() => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-
+    
     if (userId) {
       store.initParam(userId);
     }
@@ -26,8 +31,22 @@ export const Activity = observer(() => {
       children={
         <>
           <div style={{ paddingTop: 50, marginLeft: 80 }}>
-            
-         
+            <TextV2
+              text="Календарь активности"
+              style={{
+                fontWeight: 700,
+                fontSize: 26,
+              }}
+            />
+            <div style={{ display: "flex", width: "100%" }}>
+              <CalendarGit
+                years={years}
+                year={2025}
+                activities={activities}
+                selectYear={(year) => {}}
+              />
+            </div>
+
             <TextV2
               text="Статистика изучения типов данных"
               style={{

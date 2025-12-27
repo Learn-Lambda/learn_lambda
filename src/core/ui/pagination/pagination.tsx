@@ -65,8 +65,9 @@ export const NumberPagination: React.FC<{
   }, [pagination]);
   return (
     <>
-      {numbers.map((el) => (
+      {numbers.map((el, i) => (
         <TextV2
+          key={i}
           onClick={() => selectPage?.(Number(el.value))}
           text={el.value}
           color={el.isActive ? "#020d1dff" : "#64748B"}

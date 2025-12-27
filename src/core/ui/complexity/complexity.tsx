@@ -1,7 +1,7 @@
 export const Complexity: React.FC<{
   complexity: number;
 
-  onClick?: (index:number) => void;
+  onClick?: (index: number) => void;
 }> = ({ complexity, onClick }) => {
   const computed = () => {
     if (complexity === 0) {
@@ -34,6 +34,7 @@ export const Complexity: React.FC<{
     >
       {computed().map((el, index) => (
         <div
+          key={index}
           onClick={() => onClick?.(index)}
           style={{
             width: 9,

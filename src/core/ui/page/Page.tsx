@@ -19,6 +19,7 @@ export const Page: React.FC<{
 }> = observer(({ children, style, pageStore }) => {
   const store = useStore(PageStore);
   const location = useLocation();
+
   return (
     <div style={{ width: "100%", height: "100%", display: "flex" }}>
       <div style={{ width: 52 }} />
@@ -45,12 +46,14 @@ export const Page: React.FC<{
           }}
         />
         <div style={{ height: 50 }} />
-        {store.pages.map((el,index) => (
+        {store.pages.map((el, index) => (
           <div key={index} onClick={() => store.navigate?.(el.path)}>
             <Icon
               type={el.iconType}
               color={
-                location.pathname.includes(el.path) ? "#95CB31" : undefined
+                location.pathname.match(el.path)?.isNotEmpty()
+                  ? "#95CB31"
+                  : undefined
               }
             />
             <div style={{ height: el.paddingBottom }} />
@@ -81,7 +84,7 @@ export const Page: React.FC<{
                 width: 90,
                 height: 46,
                 borderRadius: 50,
-                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25);",
+                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
                 border: "1px solid #000000",
                 cursor: "pointer",
                 justifyContent: "center",
@@ -90,7 +93,9 @@ export const Page: React.FC<{
               }}
             >
               {store.currentTask?.tasks === undefined ? (
-                <><Loader/> </>
+                <>
+                  <Loader />{" "}
+                </>
               ) : (
                 <>
                   {store.currentTask?.tasks === undefined ||

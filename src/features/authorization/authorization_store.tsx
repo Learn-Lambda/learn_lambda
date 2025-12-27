@@ -44,7 +44,7 @@ export class AuthorizationStore extends FormState<AuthorizationModel> {
             });
           },
           async (e) => {
-            message.error(e.message);
+            message.error('Ошибка авторизации');
           }
         );
       },

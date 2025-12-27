@@ -5,30 +5,40 @@ import { AuthorizationLocalStorageRepository } from "../authorization/authorizat
 import {
   JSONStatisticUsage,
   StatisticTypesUsage,
-} from "./statistic_types_usage";
+} from "./model/statistic_types_usage";
+import { ActivityYear } from "./model/activiti_year";
 
 export class ActivityStore extends NavigateState {
   jsonStatisticUsage?: JSONStatisticUsage;
   statisticTypesUsage?: StatisticTypesUsage;
+  yearsUserActivity: number[] = [];
+  activityYear?: ActivityYear;
   activityHttpRepository = new ActivityHttpRepository();
   authorizationLocalStorageRepository =
     new AuthorizationLocalStorageRepository();
 
-   
- 
   constructor() {
     super();
     makeAutoObservable(this);
   }
 
-  
   initParam = async (id: string) => {
- 
     await this.mapOk(
       "statisticTypesUsage",
       this.activityHttpRepository.getUserStatisticTypesUsage(Number(id))
     );
-
+    await this.mapOk(
+      "yearsUserActivity",
+      this.activityHttpRepository.getAllYearsUserActivity(Number(id))
+    );
+    await this.mapOk(
+      "activityYear",
+      this.activityHttpRepository.getUserActivityInYear(
+        new Date().getFullYear(),
+        Number(id)
+      )
+    );
+    
     this.jsonStatisticUsage = this.statisticTypesUsage?.jsonStatisticUsage;
   };
   editCallback = (target: number, method: string, type: string) => {

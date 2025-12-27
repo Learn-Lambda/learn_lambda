@@ -1,4 +1,4 @@
-import { Activity, ActivityPath } from "../../features/activiti/activity";
+import { Activity, ActivityPath } from "../../features/activity/activity";
 import {
   TrainSettings,
   TrainSettingsPath,

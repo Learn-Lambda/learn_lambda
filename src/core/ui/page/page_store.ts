@@ -12,7 +12,7 @@ import { IconType } from "../icon/icon";
 import { TasksPath } from "../../../features/tasks/tasks";
 import { TrainPath } from "../../../features/train/train";
 import { TrainSettingsPath } from "../../../features/train_settings/train_settings";
-import { ActivityPath } from "../../../features/activiti/activity";
+import { ActivityPath } from "../../../features/activity/activity";
 import { AuthorizationLocalStorageRepository } from "../../../features/authorization/authorization_repository";
 
 interface Page {
@@ -26,11 +26,11 @@ export class PageStore extends NavigateState {
   pageHttpRepository = new PageHttpRepository();
   pages: Page[] = [
     {
-      iconType: IconType.group,
+      iconType: IconType.tasks,
       paddingBottom: 40,
       path: TasksPath,
     },
-    { iconType: IconType.tasks, paddingBottom: 40, path: TrainPath },
+    { iconType: IconType.codev2, paddingBottom: 40, path: TrainPath },
     {
       iconType: IconType.calendar,
       paddingBottom: 40,

@@ -10,6 +10,7 @@ import { AuthorizationLocalStorageRepository } from "../authorization/authorizat
 export class TasksStore extends NavigateState {
   tasks?: IPagination<Task>;
   userId: number;
+  tagsRef?: React.RefObject<HTMLDivElement>;
   currentTasksIds: number[] = [];
   taskHttpRepository = new TaskHttpRepository();
   taskLocalStorageRepository = new TaskLocalStorageRepository();
@@ -27,6 +28,7 @@ export class TasksStore extends NavigateState {
     isTaskComplete: this.onlyUnresolved,
     complexity: this.complexity,
   };
+  isHaveTagsModalState: boolean = false;
   tagsQuery: string[] = [];
   constructor() {
     super();
@@ -51,6 +53,13 @@ export class TasksStore extends NavigateState {
     } else {
       this.tagsQuery.push(tag);
     }
+    this.taskLocalStorageRepository.setTaskSettings({
+      planSolutions: this.planSolutions,
+      aiSolutions: this.aiSolutions,
+      complexity: this.complexity,
+      onlyUnresolved: this.onlyUnresolved,
+      tagsQuery: this.tagsQuery,
+    });
   };
   find = async (): Promise<void> => {
     this.getTasks();
@@ -97,13 +106,14 @@ export class TasksStore extends NavigateState {
       });
     }
   };
+
   sync = () => {
     this.taskLocalStorageRepository.setTaskSettings({
       planSolutions: this.planSolutions,
       aiSolutions: this.aiSolutions,
       complexity: this.complexity,
       onlyUnresolved: this.onlyUnresolved,
-      tagsQuery:this.tagsQuery,
+      tagsQuery: this.tagsQuery,
     });
     this.getTags();
     this.getTasks();
@@ -121,7 +131,9 @@ export class TasksStore extends NavigateState {
       this.planSolutions = el.planSolutions;
       this.complexity = el.complexity;
       this.onlyUnresolved = el.onlyUnresolved;
+      this.tagsQuery = el.tagsQuery;
     });
+
     this.getTags();
 
     this.getTasks();
@@ -139,7 +151,7 @@ export class TasksStore extends NavigateState {
     this.queryTask.complexity = this.complexity;
     this.queryTask.isAiSolution = this.aiSolutions;
     this.queryTask.isTaskComplete = this.onlyUnresolved;
-    this.queryTask.tags = this.tagsQuery;
+    // this.queryTask.tags = this.tagsQuery;
     await this.mapOk(
       "tasks",
       this.taskHttpRepository.getTasks(this.queryTask as QueryTask)

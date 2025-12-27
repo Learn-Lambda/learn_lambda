@@ -9,6 +9,8 @@ interface LifeCycleStore {
 
 export const useStore = <S extends LifeCycleStore>(storeConstructor: ClassConstructor<S>) => {
   const [store] = React.useState(() => new storeConstructor());
+ 
+
   const navigate = useNavigate();
   React.useEffect(() => {
     store?.init?.(navigate);
