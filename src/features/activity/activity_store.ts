@@ -17,6 +17,8 @@ export interface YearStatistic {
   }[];
 }
 export class ActivityStore extends NavigateState {
+  levelLearn = ["BEGIN", "MEDIUM", "MAX"];
+  userLevel = 'BEGIN';
   jsonStatisticUsage?: JSONStatisticUsage;
   statisticTypesUsage?: StatisticTypesUsage;
   yearsUserActivity: number[] = [];
@@ -33,7 +35,7 @@ export class ActivityStore extends NavigateState {
   };
   getPercentAllTypesUsage = (): string => {
     const statisticTypeData = Object.entries(
-      this.statisticTypesUsage?.jsonStatisticUsage ?? {}
+      this.statisticTypesUsage?.jsonStatisticUsage ?? {},
     )
       .map(([k, v]) => {
         return Object.entries(v).map(([key, value]) => {
@@ -56,7 +58,7 @@ export class ActivityStore extends NavigateState {
   getPercentInType = (type: string): string => {
     const statisticTypeData = Object.entries(
       // @ts-ignore
-      this.statisticTypesUsage!.jsonStatisticUsage[type]
+      this.statisticTypesUsage!.jsonStatisticUsage[type],
     ).map(([k, v]) => {
       return {
         // @ts-ignore
@@ -83,11 +85,11 @@ export class ActivityStore extends NavigateState {
   initParam = async (id: string) => {
     await this.mapOk(
       "statisticTypesUsage",
-      this.activityHttpRepository.getUserStatisticTypesUsage(Number(id))
+      this.activityHttpRepository.getUserStatisticTypesUsage(Number(id)),
     );
     await this.mapOk(
       "activityYear",
-      this.activityHttpRepository.getAllYearsUserActivity(Number(id))
+      this.activityHttpRepository.getAllYearsUserActivity(Number(id)),
     );
 
     this.jsonStatisticUsage = this.statisticTypesUsage?.jsonStatisticUsage;
@@ -102,7 +104,7 @@ export class ActivityStore extends NavigateState {
     });
   };
   typeMethods = (
-    type: any
+    type: any,
   ): {
     usageSingly: number;
     aiUsage: number;
@@ -113,6 +115,6 @@ export class ActivityStore extends NavigateState {
     isEditable: boolean;
   }[] =>
     Object.keys(type).map((el) =>
-      Object.assign({ method: el, isEditable: false }, type[el])
+      Object.assign({ method: el, isEditable: false }, type[el]),
     );
 }

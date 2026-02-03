@@ -28,7 +28,7 @@ export const TextV2: React.FC<{
     contentEditable={isEditable ?? false}
     style={Object.assign(
       {
-        fontFamily: `'Satoshi', sans-serif`,
+        fontFamily: `'system-ui'`,
         fontStyle: "normal",
         fontWeight: 500,
         fontSize: size ?? 16,

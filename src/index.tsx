@@ -1,5 +1,5 @@
 import "reflect-metadata";
-// import "antd/dist/antd.min.css";
+import "antd/dist/antd.min.css";
 
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";

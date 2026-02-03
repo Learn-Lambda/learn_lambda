@@ -8,11 +8,6 @@ import { ActivityStore } from "./activity_store";
 import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { CalendarGit } from "../../core/ui/activity_calendar/activity_calendar";
-const activities = [
-  { date: new Date("2025-01-01"), count: 5 },
-  { date: new Date("2025-01-02"), count: 5 },
-  { date: new Date("2025-12-30"), count: 5 },
-];
 
 export const ActivityPath = "/activity/";
 export const Activity = observer(() => {
@@ -44,14 +39,48 @@ export const Activity = observer(() => {
                 selectYear={(year) => {}}
               />
             </div>
-
             <TextV2
-              text={`Статистика изучения типов данных ${store.getPercentAllTypesUsage()} %`}
+              text={`Уровень изучения языка`}
               style={{
                 fontWeight: 700,
                 fontSize: 26,
               }}
             />
+            <div style={{ display: "flex" }}>
+              {store.levelLearn.map((el) => (
+                <TextV2
+                  text={el}
+                  style={{
+                    cursor: "pointer",
+                    margin: el === store.userLevel ?  4: 5,
+                    padding: 5,
+                    border: "1px solid",
+                    color: el === store.userLevel ? "white" : "",
+
+                    backgroundColor:
+                      el === store.userLevel ? "rgb(128, 0, 255)" : "",
+                  }}
+                />
+              ))}
+            </div>
+            <div style={{ display: "flex" }}>
+              <TextV2
+                text={`Статистика изучения типов данных`}
+                style={{
+                  fontWeight: 700,
+                  fontSize: 26,
+                }}
+              />
+              <div style={{ width: 5 }} />
+              <TextV2
+                text={` ${store.getPercentAllTypesUsage()}%`}
+                style={{
+                  fontWeight: 700,
+                  color: "#8000ff",
+                  fontSize: 26,
+                }}
+              />
+            </div>
           </div>
           <div
             style={{
@@ -77,7 +106,7 @@ export const Activity = observer(() => {
                         type={String(type)}
                         methods={store.typeMethods(
                           // @ts-ignore
-                          store.jsonStatisticUsage[type]
+                          store.jsonStatisticUsage[type],
                         )}
                         editCallback={(target: number, method: string) =>
                           store.editCallback(target, method, type)
@@ -119,7 +148,7 @@ const TypeStatisticUsage: React.FC<{
       m.map((el) => {
         el.isEditable = !el.isEditable;
         return el;
-      })
+      }),
     );
   };
   return (
@@ -137,7 +166,7 @@ const TypeStatisticUsage: React.FC<{
         }}
       >
         <TextV2
-          text={`${type} ${store.getPercentInType(type)}%`}
+          text={`${type}`}
           style={{
             fontWeight: 500,
             fontSize: 16,
@@ -147,10 +176,21 @@ const TypeStatisticUsage: React.FC<{
             // color: isDisabled ? "#aeaeae" : "black",
           }}
         />
+        <TextV2
+          text={` ${store.getPercentInType(type)}%`}
+          style={{
+            color: "#8000ff",
+            fontWeight: 500,
+            fontSize: 16,
+          }}
+        />
+        <div style={{ width: 5 }} />
         <div
           onClick={() => setEditable()}
           style={{
             cursor: "pointer",
+            position: "relative",
+            top: 2,
             // display: isDisabled ? "none" : undefined,
           }}
         >

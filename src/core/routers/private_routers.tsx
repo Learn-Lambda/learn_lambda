@@ -11,6 +11,7 @@ import {
   Recognition,
   RecognitionPath,
 } from "../../features/recognition/recognition";
+import { RecognitionCategoryPath, RecognitionCategory } from "../../features/recognition_category/recognition_category";
 
 export const privateRouters: IRouter[] = [
   {
@@ -34,4 +35,5 @@ export const privateRouters: IRouter[] = [
     element: <Activity />,
   },
   { path: RecognitionPath, element: <Recognition /> },
+  { path: RecognitionCategoryPath, element: <RecognitionCategory /> },
 ];
