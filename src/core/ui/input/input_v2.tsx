@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { TextV2 } from "../text/text";
 import { Icon, IconType } from "../icon/icon";
-
+import { TypedEvent } from "../../helper/typed_event";
+export class FormController extends TypedEvent<string> {}
 export const InputV2: React.FC<{
   onChange?: (text: string) => void;
   initialValue?: string;
@@ -11,7 +12,9 @@ export const InputV2: React.FC<{
   bgColor?: string;
   solidColor?: string;
   fontSize?: number;
-  height?: number;
+  height?: number | string;
+  style?: React.CSSProperties;
+  formController?: FormController;
 }> = ({
   onChange,
   initialValue,
@@ -21,19 +24,25 @@ export const InputV2: React.FC<{
   bgColor,
   solidColor,
   fontSize,
+  style,
   height,
+  formController,
 }) => {
   const [value, setValue] = useState(initialValue ?? "");
   const [hasFocus, setFocus] = useState(false);
   const [display, setDisplay] = useState("block");
   const ref = useRef<HTMLDivElement>(null);
+  formController?.on((data) => {
+    setValue(data);
+    ref.current!.innerText = data;
+  });
+
   useEffect(() => {
     setDisplay(getDisplay());
   }, [value, hasFocus]);
   useEffect(() => {
     ref.current?.addEventListener("focus", () => {
       setFocus(true);
-      console.log("      setFocus(true);");
     });
 
     ref.current?.addEventListener("blur", () => {
@@ -67,14 +76,14 @@ export const InputV2: React.FC<{
       </div>
       <div style={{ position: "relative" }}>
         <TextV2
-          style={{
+          style={Object.assign(style ?? {}, {
             position: "absolute",
-            wordWrap:'normal',
+            wordWrap: "normal",
             top: 8,
             left: icon != undefined ? 10 : 10,
             pointerEvents: "none",
             display: display,
-          }}
+          })}
           text={label}
           color={error != undefined ? "#F44336" : "#64748B"}
         />
@@ -95,7 +104,7 @@ export const InputV2: React.FC<{
           background: bgColor ?? "#EFF4FB",
           //   width: 470,
           paddingTop: 8,
-
+          paddingBottom: 6,
           paddingLeft: icon != undefined ? 10 : 10,
           overflow: "auto",
           fontSize: fontSize,

@@ -13,14 +13,12 @@ const activities = [
   { date: new Date("2025-01-02"), count: 5 },
   { date: new Date("2025-12-30"), count: 5 },
 ];
-const years = [2024, 2025];
+
 export const ActivityPath = "/activity/";
 export const Activity = observer(() => {
   const { userId } = useParams();
   const store = useStore(ActivityStore);
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    
     if (userId) {
       store.initParam(userId);
     }
@@ -40,15 +38,15 @@ export const Activity = observer(() => {
             />
             <div style={{ display: "flex", width: "100%" }}>
               <CalendarGit
-                years={years}
-                year={2025}
-                activities={activities}
+                years={store.getYears()}
+                year={store.getActiveYear()}
+                activities={store.getActivitiesInYear() ?? []}
                 selectYear={(year) => {}}
               />
             </div>
 
             <TextV2
-              text="Статистика изучения типов данных"
+              text={`Статистика изучения типов данных ${store.getPercentAllTypesUsage()} %`}
               style={{
                 fontWeight: 700,
                 fontSize: 26,
@@ -75,6 +73,7 @@ export const Activity = observer(() => {
                   return (
                     <>
                       <TypeStatisticUsage
+                        store={store}
                         type={String(type)}
                         methods={store.typeMethods(
                           // @ts-ignore
@@ -100,6 +99,7 @@ export const Activity = observer(() => {
 
 const TypeStatisticUsage: React.FC<{
   type: string;
+  store: ActivityStore;
   methods: {
     usageSingly: number;
     aiUsage: number;
@@ -107,10 +107,11 @@ const TypeStatisticUsage: React.FC<{
     method: string;
     target: number;
     importance: number;
+
     isEditable: boolean;
   }[];
   editCallback: (target: number, method: string) => void;
-}> = ({ type, methods, editCallback }) => {
+}> = ({ type, methods, store, editCallback }) => {
   const [m, setM] = useState(methods);
   const [isDisabled, setDisabled] = useState(true);
   const setEditable = () => {
@@ -136,7 +137,7 @@ const TypeStatisticUsage: React.FC<{
         }}
       >
         <TextV2
-          text={type}
+          text={`${type} ${store.getPercentInType(type)}%`}
           style={{
             fontWeight: 500,
             fontSize: 16,
@@ -166,6 +167,7 @@ const TypeStatisticUsage: React.FC<{
           method={el.method}
           target={el.target}
           importance={el.importance}
+          type={type}
         />
       ))}
     </>
@@ -180,6 +182,7 @@ const MethodStatistic: React.FC<{
   target: number;
   importance: number;
   isEditable: boolean;
+  type: string;
   editCallback: (i: number) => void;
 }> = ({
   method,
@@ -190,6 +193,7 @@ const MethodStatistic: React.FC<{
   importance,
   isEditable,
   editCallback,
+  type,
 }) => {
   const [t, setT] = useState(target);
   const plusClick = () => {
@@ -307,7 +311,7 @@ const MethodStatistic: React.FC<{
               content={<>Изучаемый метод</>}
               children={
                 <TextV2
-                  text={methodMapper(method)}
+                  text={methodMapper(method, type)}
                   style={{
                     fontWeight: 400,
                     fontSize: 20,
@@ -362,7 +366,12 @@ const MethodStatistic: React.FC<{
     </div>
   );
 };
-function methodMapper(method: string): string {
+function methodMapper(method: string, type: string): string {
+  // const kk = { String: "String", Array: "Array", Numer: "Number" };
+  if (method === "constructorUsage") {
+    return type;
+  }
+  // return method;
   if (method === "parenthesisAccessOperator") {
     return "[]";
   }

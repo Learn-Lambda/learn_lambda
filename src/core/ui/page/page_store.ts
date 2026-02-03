@@ -14,6 +14,7 @@ import { TrainPath } from "../../../features/train/train";
 import { TrainSettingsPath } from "../../../features/train_settings/train_settings";
 import { ActivityPath } from "../../../features/activity/activity";
 import { AuthorizationLocalStorageRepository } from "../../../features/authorization/authorization_repository";
+import { RecognitionPath } from "../../../features/recognition/recognition";
 
 interface Page {
   path: string;
@@ -42,9 +43,9 @@ export class PageStore extends NavigateState {
       path: "/",
     },
     {
-      iconType: IconType.grid,
+      iconType: IconType.codeRecognition,
       paddingBottom: 40,
-      path: TrainSettingsPath,
+      path: RecognitionPath,
     },
   ];
   currentTask?: {

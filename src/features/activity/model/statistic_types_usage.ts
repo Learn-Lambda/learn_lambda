@@ -7,7 +7,7 @@ export interface StatisticTypesUsage {
 export interface JSONStatisticUsage {
   String: { [key: string]: StatisticUsage };
   Array: { [key: string]: StatisticUsage };
-  Object: Object;
+  Object:  { [key: string]: StatisticUsage };
   Map: { [key: string]: StatisticUsage };
   Set: { [key: string]: StatisticUsage };
   Number: Number;

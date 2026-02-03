@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextV2 } from "../text/text";
 import { makeAutoObservable } from "mobx";
 import Popover from "../popover/popover";
 import { Hover } from "../hover/hover";
+import { observer } from "mobx-react-lite";
 
 const mouths: { name: string; num: number }[] = [
   { name: "Январь", num: 0 },
@@ -40,6 +41,16 @@ const mountToLocale = (mouth: number): string => {
   return m[mouth] as string;
 };
 class CalendarState {
+  updateStatistic = (activities: { date: Date; count: number }[]) => {
+    this.activities = activities.map((el) => {
+      return {
+        date: `${el.date.getFullYear()}.${el.date.getMonth()}.${el.date.getDate()}`,
+        count: el.count,
+      };
+    });
+
+    this._init();
+  };
   year: number = 0;
   columns?: {
     columnNumber: number;
@@ -65,8 +76,8 @@ class CalendarState {
       };
     });
     this.year = year;
-    makeAutoObservable(this);
     this._init();
+    makeAutoObservable(this);
   }
   _init() {
     const columns = mouths
@@ -84,16 +95,17 @@ class CalendarState {
             counter = 0;
           }
           counter += 1;
+
           const isActive =
             this.activities?.find(
               (el) =>
                 el.date ===
                 `${subEl.getFullYear()}.${subEl.getMonth()}.${subEl.getDate()}`
             ) !== undefined;
+           
           return {
             columnNumber: currentIndex,
             date: subEl,
-
             activityCount: isActive
               ? this.activities?.find(
                   (el) =>
@@ -133,7 +145,7 @@ const Activity: React.FC<{
   date: Date;
   isActive: boolean;
   activityCount?: number;
-}> = ({ num, date, activityCount, isActive }) => {
+}> = observer(({ num, date, activityCount, isActive }) => {
   return (
     <Popover
       children={
@@ -172,7 +184,7 @@ const Activity: React.FC<{
       }
     ></Popover>
   );
-};
+});
 export const CalendarGit: React.FC<{
   year: number;
   years: number[];
@@ -181,9 +193,12 @@ export const CalendarGit: React.FC<{
     count: number;
   }[];
   selectYear: (year: number) => void;
-}> = ({ year, activities, years, selectYear }) => {
+}> = observer(({ year, activities, years, selectYear }) => {
   const [store] = useState(() => new CalendarState(year, activities));
-
+  useEffect(() => {
+    store.updateStatistic(activities);
+  }, [activities]);
+  // console.log(JSON.stringify(store.columns))
   return (
     <div
       style={{ width: 1200, height: 200, overflow: "auto", display: "flex" }}
@@ -229,4 +244,4 @@ export const CalendarGit: React.FC<{
       </div>
     </div>
   );
-};
+});

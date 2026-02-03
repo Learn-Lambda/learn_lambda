@@ -34,7 +34,7 @@ export const Tasks = observer(() => {
               />
 
               <div
-                className="hideScroll"
+                // className="hideScroll"
                 style={{
                   borderRadius: 4,
                   height: "max-content",
@@ -43,7 +43,8 @@ export const Tasks = observer(() => {
                   paddingLeft: 10,
                   paddingRight: 10,
                   display: "flex",
-                  overflow: "scroll",
+                  // overflow: "scroll",
+                  overflowX: "scroll",
                 }}
               >
                 {store.tags.map((el, i) => {
@@ -236,7 +237,17 @@ export const Tasks = observer(() => {
                             {el.usersWhoSolvedTheTask.includes(store.userId) ? (
                               <>
                                 <div style={{ width: 10 }} />
-                                <Icon type={IconType.tick} />
+
+                                <Icon
+                                  type={IconType.tick}
+                                  color={
+                                    store.currentTasksIds?.includes(el.id)
+                                      ? "#EFF4FB"
+                                      : index.isEven()
+                                      ? undefined
+                                      : undefined
+                                  }
+                                />
                               </>
                             ) : (
                               <></>

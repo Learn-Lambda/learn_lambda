@@ -7,6 +7,10 @@ import { Tasks, TasksPath } from "../../features/tasks/tasks";
 import { Token, TokenPath } from "../../features/token/token";
 import { TrainPath, Train } from "../../features/train/train";
 import type { IRouter } from "./routers";
+import {
+  Recognition,
+  RecognitionPath,
+} from "../../features/recognition/recognition";
 
 export const privateRouters: IRouter[] = [
   {
@@ -29,4 +33,5 @@ export const privateRouters: IRouter[] = [
     path: ActivityPath + ":userId",
     element: <Activity />,
   },
+  { path: RecognitionPath, element: <Recognition /> },
 ];

@@ -13,6 +13,11 @@ import { Value } from "./task_solution_result";
 import { useNavigate } from "react-router-dom";
 import { ViewOtherSolutionPath } from "../view_other_solutions/view_other_solutions";
 import { TasksPath } from "../tasks/tasks";
+import { Switcher } from "../../core/ui/switcher/switcher";
+import Popover from "../../core/ui/popover/popover";
+import Markdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { Loader } from "../../core/ui/loader/loader";
 
 export const TrainPath = "/train/last/task";
 
@@ -99,8 +104,9 @@ export const Train = observer(() => {
                             >
                               {store.loadTags ? (
                                 <div style={{ display: "flex" }}>
-                                  {store.task?.tags?.map((el) => (
+                                  {store.task?.tags?.map((el, i) => (
                                     <div
+                                      key={i}
                                       style={{
                                         backgroundColor: "#E2E8F0",
                                         paddingBottom: 4,
@@ -125,6 +131,53 @@ export const Train = observer(() => {
                               complexity={store.task?.complexity ?? 1}
                             />
                             <div style={{ width: 8 }} />
+                            {store.isVscodeMode ? (
+                              <>
+                                <div
+                                  style={{
+                                    alignItems: "center",
+                                    height: 26,
+                                    paddingRight: 10,
+                                    paddingLeft: 10,
+                                  }}
+                                >
+                                  <Popover
+                                    content={
+                                      <>
+                                        <TextV2
+                                          text="Включите если вы решайте задачи через vscode"
+                                          style={{
+                                            alignContent: "center",
+                                          }}
+                                        />
+                                      </>
+                                    }
+                                    children={
+                                      <>
+                                        <TextV2
+                                          text="Vscode mode"
+                                          style={{
+                                            position: "relative",
+                                            top: -7,
+                                            left: -7,
+                                            fontWeight: 900,
+                                            alignContent: "center",
+                                          }}
+                                        />
+                                      </>
+                                    }
+                                  />
+
+                                  <Switcher
+                                    isOn={store.isVscodeMode}
+                                    onToggle={() => store.setVsCodeMode()}
+                                  />
+                                </div>
+                              </>
+                            ) : (
+                              <></>
+                            )}
+                            <div style={{ width: 8 }} />
                             <div
                               style={{
                                 width: 29,
@@ -140,7 +193,7 @@ export const Train = observer(() => {
                               <div>
                                 <Icon
                                   type={IconType.ok}
-                                  color={true ? "#8A99AF" : undefined}
+                                  color={store.task ? "#8A99AF" : undefined}
                                 />
                               </div>
                             </div>
@@ -174,9 +227,15 @@ export const Train = observer(() => {
                           <Panel>
                             <PanelGroup
                               direction="vertical"
-                              style={{ width: "100%", height: "100%" }}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                              }}
                             >
-                              <Panel onResize={(size) => console.log()}>
+                              <Panel
+                                // style={{ flex: undefined, flexGrow: "inherit" }}
+                                onResize={(size) => {}}
+                              >
                                 <div style={{ width: "100%", height: 51 }}>
                                   <div style={{ height: 10 }} />
                                   <div
@@ -227,72 +286,231 @@ export const Train = observer(() => {
                                 ></div>
                               </PanelResizeHandle>
                               <Panel>
-                                <div style={{ width: "100%", height: 51 }}>
-                                  <div style={{ height: 10 }} />
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <div style={{ width: 10 }} />
-                                    <Icon
-                                      type={IconType.aiSmall}
-                                      color="#212B36"
-                                    />
-                                    <div style={{ width: 10 }} />
-                                    <TextV2 text="Чат с ии" size={16} />
-                                  </div>
+                                <div style={{ height: "100%" }}>
+                                  {store.isAiSolutionUnlock ? (
+                                    <>
+                                      <div
+                                        style={{ width: "100%", height: 36 }}
+                                      >
+                                        <div style={{ height: 10 }} />
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <div style={{ width: 10 }} />
+                                          <Icon
+                                            type={IconType.aiSmall}
+                                            color="#212B36"
+                                          />
+                                          <div style={{ width: 10 }} />
+                                          <TextV2 text="Чат с ии" size={16} />
+                                        </div>
 
-                                  <div
-                                    style={{
-                                      width: "100%",
-                                      height: 1,
-                                      backgroundColor: "#E2E8F0",
-                                    }}
-                                  />
-                                </div>
-                                <div
-                                  style={{
-                                    height: `calc(100% -  ${store.inputHeight}px - 51px)`,
-                                  }}
-                                ></div>
-                                <div
-                                  style={{
-                                    height: 40,
-                                    width: "100%",
-                                    display: "flex",
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      width: `calc(100% - 40px)`,
-                                    }}
-                                  >
-                                    <InputV2
-                                      height={store.inputHeight}
-                                      bgColor="white"
-                                      fontSize={15}
-                                      onChange={(text) => {
-                                        store.inputHelper(text);
-                                      }}
-                                    />
-                                  </div>
-                                  <div
-                                    style={{
-                                      backgroundColor: "#3C50E0",
-                                      height: 40,
-                                      width: 40,
-                                      borderRadius: 4,
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    <div
-                                      style={{ position: "relative", top: 8 }}
-                                    >
-                                      <Icon size={25} type={IconType.send} />
-                                    </div>
-                                  </div>
+                                        <div
+                                          style={{
+                                            width: "100%",
+                                            height: 1,
+                                            backgroundColor: "#E2E8F0",
+                                          }}
+                                        />
+                                      </div>
+                                      <div
+                                        style={{
+                                          height: `calc(100% -  ${store.inputHeight}px - 36px)`,
+                                          overflow: "auto",
+                                        }}
+                                      >
+                                        {store.messages.map((el, i) => (
+                                          <div
+                                            key={i}
+                                            style={{
+                                              paddingTop: 10,
+                                              margin: 5,
+                                              backgroundColor:
+                                                el.messageType === "user"
+                                                  ? "#1c2434"
+                                                  : "#eff4fc",
+                                              border: "1px",
+                                              borderRadius: 20,
+                                              color:
+                                                el.messageType === "user"
+                                                  ? "white"
+                                                  : undefined,
+                                              alignContent: "center",
+                                              // width: "max-content",
+                                              paddingLeft: 10,
+                                              paddingRight: 10,
+                                              // marginRight:
+                                              //   el.messageType === "user"
+                                              //     ? 20
+                                              //     : undefined,
+                                              // marginLeft:
+                                              //   el.messageType === "user"
+                                              //     ? undefined
+                                              //     : 20,
+                                              // placeSelf:
+                                              //   el.messageType === "user"
+                                              //     ? "end"
+                                              //     : undefined,
+                                            }}
+                                          >
+                                            <Markdown
+                                              children={el.message}
+                                              components={{
+                                                code(props) {
+                                                  const {
+                                                    children,
+                                                    className,
+                                                    node,
+                                                    ...rest
+                                                  } = props;
+                                                  const match =
+                                                    /language-(\w+)/.exec(
+                                                      className || ""
+                                                    );
+                                                  return match ? (
+                                                    <SyntaxHighlighter
+                                                      PreTag="div"
+                                                      children={String(
+                                                        children
+                                                      ).replace(/\n$/, "")}
+                                                      language={"typescript"}
+                                                      // style={dark}
+                                                    />
+                                                  ) : (
+                                                    <code
+                                                      {...rest}
+                                                      className={className}
+                                                    >
+                                                      {children}
+                                                    </code>
+                                                  );
+                                                },
+                                              }}
+                                            />
+                                          </div>
+                                        ))}
+                                        {store.messageLoader ? (
+                                          <>
+                                            <div style={{ height: 50 }}>
+                                              <Loader />
+                                            </div>
+                                          </>
+                                        ) : (
+                                          <></>
+                                        )}
+                                      </div>
+                                      <div
+                                        style={{
+                                          height: 40,
+                                          width: "100%",
+                                          display: "flex",
+                                        }}
+                                      >
+                                        <div
+                                          style={{
+                                            width: `calc(100% - 40px)`,
+                                          }}
+                                        >
+                                          <InputV2
+                                            formController={
+                                              store.formController
+                                            }
+                                            height={"max-content"}
+                                            bgColor="white"
+                                            fontSize={15}
+                                            onChange={(text) => {
+                                              store.inputHelper(text);
+                                            }}
+                                            style={{ paddingBottom: 5 }}
+                                          />
+                                        </div>
+                                        <div style={{ position: "relative" }}>
+                                          <div
+                                            style={{
+                                              backgroundColor:
+                                                store.messageLoader
+                                                  ? "#525463ff"
+                                                  : "#3C50E0",
+                                              height: 40,
+                                              width: 40,
+                                              borderRadius: 4,
+                                              textAlign: "center",
+                                              position: "fixed",
+                                            }}
+                                          >
+                                            <div
+                                              style={{
+                                                position: "relative",
+                                                top: 8,
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() =>
+                                                store.messageLoader
+                                                  ? () => {}
+                                                  : store.sendMessage()
+                                              }
+                                            >
+                                              <Icon
+                                                size={25}
+                                                type={IconType.send}
+                                              />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      {store.isAiSolutionLoad ? (
+                                        <>
+                                          <Loader />
+                                        </>
+                                      ) : (
+                                        <>
+                                          {store.gptButtonIsUnlock ? (
+                                            <>
+                                              <TextV2
+                                                text="Востановить переписку с gpt?"
+                                                onClick={() =>
+                                                  store.solveWithAi()
+                                                }
+                                                style={{
+                                                  justifySelf: "center",
+                                                  fontWeight: 900,
+                                                  alignContent: "center",
+                                                  height: "100%",
+                                                  alignSelf: "center",
+                                                  cursor: "pointer",
+                                                  alignItems: "center",
+                                                }}
+                                              />
+                                            </>
+                                          ) : (
+                                            <>
+                                              <TextV2
+                                                text="Решить с ИИ"
+                                                onClick={() =>
+                                                  store.solveWithAi()
+                                                }
+                                                style={{
+                                                  justifySelf: "center",
+                                                  fontWeight: 900,
+                                                  alignContent: "center",
+                                                  height: "100%",
+                                                  alignSelf: "center",
+                                                  cursor: "pointer",
+                                                  alignItems: "center",
+                                                }}
+                                              />
+                                            </>
+                                          )}
+                                        </>
+                                      )}
+                                    </>
+                                  )}
                                 </div>
                               </Panel>
                             </PanelGroup>
@@ -306,30 +524,42 @@ export const Train = observer(() => {
                               }}
                             ></div>
                           </PanelResizeHandle>
-                          <Panel>
-                            <PanelGroup
-                              direction="vertical"
-                              style={{ width: "100%", height: "100%" }}
-                            >
-                              <Code store={store} />
-                              <PanelResizeHandle>
-                                <div
-                                  style={{
-                                    height: 2,
-                                    width: "100%",
-                                    backgroundColor: "#E2E8F0",
-                                  }}
-                                ></div>
-                              </PanelResizeHandle>
-                              {store.isViewResultTest ? (
-                                <>
-                                  <ResultTest store={store} />
-                                </>
-                              ) : (
-                                <></>
-                              )}
-                            </PanelGroup>
-                          </Panel>
+                          {store.isVscodeMode ? (
+                            <></>
+                          ) : (
+                            <>
+                              <Panel>
+                                <PanelGroup
+                                  direction="vertical"
+                                  style={{ width: "100%", height: "100%" }}
+                                >
+                                  {store.isVscodeMode ? (
+                                    <></>
+                                  ) : (
+                                    <>
+                                      <Code store={store} />
+                                      <PanelResizeHandle>
+                                        <div
+                                          style={{
+                                            height: 2,
+                                            width: "100%",
+                                            backgroundColor: "#E2E8F0",
+                                          }}
+                                        ></div>
+                                      </PanelResizeHandle>
+                                    </>
+                                  )}
+                                  {store.isViewResultTest ? (
+                                    <>
+                                      <ResultTest store={store} />
+                                    </>
+                                  ) : (
+                                    <></>
+                                  )}
+                                </PanelGroup>
+                              </Panel>
+                            </>
+                          )}
                         </PanelGroup>
                       </div>
                     </div>
@@ -365,7 +595,45 @@ export const Code: React.FC<{ store: TrainStore }> = observer(({ store }) => {
                 <></>
               ) : (
                 <>
-                 
+                  <div
+                    style={{
+                      paddingLeft: 20,
+                      paddingRight: 20,
+                      display: "flex",
+                    }}
+                  >
+                    <Popover
+                      content={
+                        <>
+                          <TextV2
+                            text="Включите если вы решайте задачи через vscode"
+                            style={{
+                              alignContent: "center",
+                            }}
+                          />
+                        </>
+                      }
+                      children={
+                        <>
+                          <TextV2
+                            text="Vscode mode"
+                            style={{
+                              position: "relative",
+                              top: -2,
+                              left: -7,
+                              fontWeight: 900,
+                              alignContent: "center",
+                            }}
+                          />
+                        </>
+                      }
+                    />
+
+                    <Switcher
+                      isOn={store.isVscodeMode}
+                      onToggle={() => store.setVsCodeMode()}
+                    />
+                  </div>
                   <TextV2
                     onClick={() => store.sendSolutions()}
                     text="Отправить Решение"
@@ -385,9 +653,7 @@ export const Code: React.FC<{ store: TrainStore }> = observer(({ store }) => {
                 <>
                   <div style={{ width: 5 }}></div>
                   <TextV2
-                    onClick={() =>
-                      n(ViewOtherSolutionPath + `${store.task?.id}`)
-                    }
+                    onClick={() => store.viewOtherSolutionClick()}
                     text="Перейти к другим решениям"
                     style={{
                       // width: 20,
@@ -482,6 +748,7 @@ export const ResultTest: React.FC<{ store: TrainStore }> = observer(
             <div style={{ display: "flex" }}>
               {store.taskSolutionResult?.map((el, index) => (
                 <div
+                  key={index}
                   onClick={() => store.setActiveCase(index)}
                   style={{
                     backgroundColor:
@@ -580,8 +847,9 @@ const ArgumentsMapper: React.FC<{ wasLaunchedWithArguments: any }> = ({
   if (wasLaunchedWithArguments instanceof Array) {
     return (
       <>
-        {wasLaunchedWithArguments.map((el) => (
+        {wasLaunchedWithArguments.map((el, i) => (
           <div
+            key={i}
             style={{
               padding: 5,
               margin: 5,

@@ -6,39 +6,90 @@ import {
   JSONStatisticUsage,
   StatisticTypesUsage,
 } from "./model/statistic_types_usage";
-import { ActivityYear } from "./model/activiti_year";
 
+export interface YearStatistic {
+  id: number;
+  userId: number;
+  year: number;
+  statistic?: {
+    date: Date;
+    count: number;
+  }[];
+}
 export class ActivityStore extends NavigateState {
   jsonStatisticUsage?: JSONStatisticUsage;
   statisticTypesUsage?: StatisticTypesUsage;
   yearsUserActivity: number[] = [];
-  activityYear?: ActivityYear;
+  activityYear?: YearStatistic[];
   activityHttpRepository = new ActivityHttpRepository();
   authorizationLocalStorageRepository =
     new AuthorizationLocalStorageRepository();
-
   constructor() {
     super();
     makeAutoObservable(this);
   }
+  getActiveYear = (): number => {
+    return new Date().getFullYear();
+  };
+  getPercentAllTypesUsage = (): string => {
+    const statisticTypeData = Object.entries(
+      this.statisticTypesUsage?.jsonStatisticUsage ?? {}
+    )
+      .map(([k, v]) => {
+        return Object.entries(v).map(([key, value]) => {
+          return {
+            // @ts-ignore
+            percent: value.usageSingly / (value.target / 100),
+          };
+        });
+      })
+      .flat(1);
+    const result =
+      statisticTypeData.reduce((acc, el) => {
+        return acc + el.percent;
+      }, 0) / statisticTypeData.length;
+    if (result === 0) {
+      return "0";
+    }
+    return result.toFixed(2);
+  };
+  getPercentInType = (type: string): string => {
+    const statisticTypeData = Object.entries(
+      // @ts-ignore
+      this.statisticTypesUsage!.jsonStatisticUsage[type]
+    ).map(([k, v]) => {
+      return {
+        // @ts-ignore
+        percent: v.usageSingly / (v.target / 100),
+      };
+    });
+    const result =
+      statisticTypeData.reduce((acc, el) => {
+        return acc + el.percent;
+      }, 0) / statisticTypeData.length;
+    if (result === 0) {
+      return "0";
+    }
+    return result.toFixed(2);
+  };
+  getYears = () => this.activityYear?.map((el) => el.year) ?? [];
 
+  getActivitiesInYear = () =>
+    this.activityYear
+      ?.find((el) => el.year === this.getActiveYear())
+      ?.statistic?.map((el) => {
+        return { date: new Date(el.date), count: el.count };
+      }) ?? [];
   initParam = async (id: string) => {
     await this.mapOk(
       "statisticTypesUsage",
       this.activityHttpRepository.getUserStatisticTypesUsage(Number(id))
     );
     await this.mapOk(
-      "yearsUserActivity",
+      "activityYear",
       this.activityHttpRepository.getAllYearsUserActivity(Number(id))
     );
-    await this.mapOk(
-      "activityYear",
-      this.activityHttpRepository.getUserActivityInYear(
-        new Date().getFullYear(),
-        Number(id)
-      )
-    );
-    
+
     this.jsonStatisticUsage = this.statisticTypesUsage?.jsonStatisticUsage;
   };
   editCallback = (target: number, method: string, type: string) => {

@@ -158,6 +158,7 @@ export abstract class FormState<V> extends UiErrorState<any> {
   };
 
   modalCancel = () => {
+    // this.viewModel = 
     this.isModalOpen = false;
   };
   async init(navigate?: NavigateFunction): Promise<any> {
@@ -165,21 +166,42 @@ export abstract class FormState<V> extends UiErrorState<any> {
   }
 }
 
+export enum CrudMode {
+  delete,
+  edit,
+  create,
+}
 export abstract class CrudFormStore<
   V extends ValidationModel,
   R extends CrudHttpRepository<V>
 > extends FormState<V> {
-  models = (): V[] | undefined => this.page?.data;
+  currentMode?: CrudMode;
   page?: IPagination<V>;
   abstract repository: R;
+  searchByField?: string;
+  searchValue?: string;
+  setMode = (mode: CrudMode) => {
+    if (mode === this.currentMode) {
+      this.currentMode = undefined;
+      return;
+    }
+
+    this.currentMode = mode;
+  };
+
+  selectPage = async (page: number) => {
+    this.page!.currentPage = page;
+    await this.read();
+  };
+  models = (): V[] | undefined => this.page?.data;
   async init(navigate?: NavigateFunction): Promise<any> {
     await this.mapOk("page", this.read());
   }
 
   create = (model: V) => this.repository.addModel(model);
-  delete = (id: number) => {
-    this.repository.deleteModel(id);
-    this.mapOk("page", this.read());
+  delete = async (id: number) => {
+    await this.repository.deleteModel(id);
+    await this.mapOk("page", this.read());
   };
   update = (model: V) => this.repository.edit(model);
   read = () => this.repository.getPage(this.page?.currentPage ?? 1);
@@ -204,9 +226,21 @@ export abstract class CrudFormStore<
   }
   new = async () => {
     (await this.viewModel.validMessage()).map(async () => {
-      this.create(this.viewModel);
+      await this.create(this.viewModel);
       await this.mapOk("page", this.read());
+      this.modalCancel();
     });
+  };
+  createOrUpdate = async () => {
+    if (this.currentMode === CrudMode.edit) {
+      (await this.viewModel.validMessage()).map(async () => {
+        await this.update(this.viewModel);
+        await this.mapOk("page", this.read());
+        this.modalCancel();
+      });
+    } else {
+      this.new();
+    }
   };
   async saveModalButton() {
     await (
@@ -216,4 +250,28 @@ export abstract class CrudFormStore<
       this.initCrud();
     });
   }
+  findBy = (text: string): void => {
+    this.searchValue = text;
+  };
+  onClickFindButton = async (): Promise<void> => {
+    if (this.searchByField === undefined) {
+      message.error("Выберите поле по которому искать");
+      return;
+    }
+    if (this.searchValue === undefined) {
+      message.error("Введите текст для поиска");
+      return;
+    }
+    (
+      await this.repository.findModel(this.searchByField, this.searchValue)
+    ).fold(
+      (s) => {
+        // @ts-ignore
+        this.page!.data = s;
+      },
+      (e) => {
+        message.error("Ошибка поиска");
+      }
+    );
+  };
 }

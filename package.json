@@ -27,6 +27,8 @@
     "react-activity-calendar": "^2.7.15",
     "react-activity-heatmap": "^1.0.7",
     "react-dom": "^18.2.0",
+    "react-markdown": "^10.1.0",
+    "react-mde": "^11.5.0",
     "react-resizable-panels": "^3.0.4",
     "react-router-dom": "^6.18.0",
     "react-scripts": "5.0.1",

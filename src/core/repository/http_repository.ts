@@ -98,11 +98,24 @@ export class HttpRepository {
 export abstract class CoreHttpRepository extends HttpRepository {
   abstract featurePath: string;
 }
-export abstract class CrudHttpRepository<M extends ValidationModel> extends CoreHttpRepository {
-  getPage = (page = 1) => this._jsonRequest<M[]>(HttpMethod.GET, this.featurePath + `?page=${page}`);
-  edit = async (model: M) => (await model.validMessage<M>()).map((validationModel) => this._jsonRequest(HttpMethod.PUT, this.featurePath, validationModel));
-  addModel = async (model: M) => (await model.validMessage<M>()).map((validationModel) => this._jsonRequest(HttpMethod.POST, this.featurePath, validationModel));
-  deleteModel = async (id: number) => this._jsonRequest(HttpMethod.DELETE, this.featurePath + `?id=${id}`);
+export abstract class CrudHttpRepository<
+  M extends ValidationModel
+> extends CoreHttpRepository {
+  getPage = (page = 1) =>
+    this._jsonRequest<M[]>(HttpMethod.GET, this.featurePath + `?page=${page}`);
+  edit = async (model: M) =>
+    (await model.validMessage<M>()).map((validationModel) =>
+      this._jsonRequest(HttpMethod.PUT, this.featurePath, validationModel)
+    );
+  addModel = async (model: M) =>
+    (await model.validMessage<M>()).map((validationModel) =>
+      this._jsonRequest(HttpMethod.POST, this.featurePath, validationModel)
+    );
+  deleteModel = async (id: number) =>
+    this._jsonRequest(HttpMethod.DELETE, this.featurePath + `?id=${id}`);
+  findModel = async (prop: string, value: string) =>
+    this._jsonRequest(HttpMethod.POST, this.featurePath + "/find", {
+      prop: prop,
+      value: value,
+    });
 }
-
-

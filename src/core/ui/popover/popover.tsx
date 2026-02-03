@@ -9,7 +9,7 @@ const Popover: React.FC<{
   const triggerRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  // Закрываем поповер при клике вне его
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -27,7 +27,7 @@ const Popover: React.FC<{
     };
   }, []);
 
-  // Простое позиционирование по заданной стороне
+
   const getPopoverStyle = (): React.CSSProperties => {
     if (!triggerRef.current) return {};
     const rect = triggerRef.current.getBoundingClientRect();
