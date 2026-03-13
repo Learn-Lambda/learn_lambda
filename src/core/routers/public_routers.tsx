@@ -3,6 +3,10 @@ import {
   AuthorizationScreenPath,
 } from "../../features/authorization/authorization_screen";
 import {
+  RecognitionPath,
+  Recognition,
+} from "../../features/recognition/recognition";
+import {
   ViewOtherSolution,
   ViewOtherSolutionPath,
 } from "../../features/view_other_solutions/view_other_solutions";
@@ -19,4 +23,5 @@ export const publicRouters: IRouter[] = [
     element: <AuthorizationScreen />,
   },
   { path: ViewOtherSolutionPath + ":id", element: <ViewOtherSolution /> },
+  { path: RecognitionPath + "/" + ":id", element: <Recognition /> },
 ];

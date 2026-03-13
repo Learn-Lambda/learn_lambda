@@ -66,6 +66,9 @@ export class PageStore extends NavigateState {
         if (el.path === ActivityPath) {
           el.path += user.id;
         }
+        if (el.path === RecognitionPath) {
+          el.path += '/' + user.id;
+        }
         return el;
       });
     });

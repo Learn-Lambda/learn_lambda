@@ -11,7 +11,7 @@ export class LocalStorageRepository {
     }
     return Result.ok(result as T);
   }
-  _removeItem(key:string):void{
+  _removeItem(key: string): void {
     localStorage.removeItem(key);
   }
 }

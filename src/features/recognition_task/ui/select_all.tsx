@@ -13,6 +13,7 @@ import { Icon, IconType } from "../../../core/ui/icon/icon";
 import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { message } from "antd";
+import { RecognitionTaskStore } from "../recognition_task_store";
 
 export class SelectAllModel {}
 
@@ -67,7 +68,6 @@ export enum JobTypes {
   userInput = "Пользовательский ввод",
 }
 export class SelectAllStore extends FormState<SelectAllModel> {
-  getType = () => "Тренировка";
   rangesNeedToChose?: { range: monaco.IRange[]; isSelected: boolean }[] =
     undefined;
   lastSection?: SelectRange = undefined;
@@ -79,6 +79,8 @@ export class SelectAllStore extends FormState<SelectAllModel> {
   isValid = false;
   rangesIsValidCount = 0;
   rangesIsErrorCount = 0;
+  nextHasVisible = false;
+  type: string;
   constructor() {
     super();
     makeAutoObservable(this);
@@ -93,16 +95,15 @@ export class SelectAllStore extends FormState<SelectAllModel> {
       if (decorations === null) {
         return;
       }
-      // Если есть хотя бы одна декорация, удаляем её
-      if (decorations.length > 0) {
-        const decorationIdsToRemove = decorations.map((d) => d.id); // массив id декораций для удаления
 
-        // Удаляем указанные декорации
+      if (decorations.length > 0) {
+        const decorationIdsToRemove = decorations.map((d) => d.id);
         this.editor!.deltaDecorations(decorationIdsToRemove, []);
       }
     });
   };
-  validationDecorators = (): void => {
+
+  onClickOk = (store: RecognitionTaskStore): void => {
     this.isValid = true;
     this.selectSectionModels?.forEach((el) => {
       el.isOk = false;
@@ -140,6 +141,16 @@ export class SelectAllStore extends FormState<SelectAllModel> {
         this.applyDecorators(mergeRanges(el.range), "error-box");
       }
     });
+    const isOkTest =
+      this.rangesNeedToChose?.filter((el) => !el.isSelected).length === 0;
+    if (isOkTest) {
+      this.nextHasVisible = true;
+    }
+    if (isOkTest === false && this.type === "экзамен") {
+      store.testIsNotOk();
+    } else {
+      store.testIsOk();
+    }
   };
   applyDecorators = (range: monaco.Range | monaco.IRange, cssClass: string) => {
     this.editor!.deltaDecorations(
@@ -179,7 +190,8 @@ export class SelectAllStore extends FormState<SelectAllModel> {
       this.editor?.deltaDecorations([], decorations);
     });
   };
-  dependencyInit(rangesNeedToChose: monaco.IRange[][]) {
+  dependencyInit(rangesNeedToChose: monaco.IRange[][], type: string) {
+    this.type = type;
     this.rangesNeedToChose = rangesNeedToChose.map((el) => {
       return {
         range: el,
@@ -292,146 +304,219 @@ export class SelectAllStore extends FormState<SelectAllModel> {
 
 export const SelectAll: React.FC<{
   selectAllModel: { code: string; ranges: monaco.IRange[][] };
-}> = observer(({ selectAllModel }) => {
-  const store = useStore(SelectAllStore);
-  useEffect(() => {
-    store.dependencyInit(selectAllModel.ranges ?? []);
-  }, []);
+  type: string;
+  task: string;
+  subType: string;
+  index: number;
+  count: number;
+  storeParrent: RecognitionTaskStore;
+}> = observer(
+  ({ selectAllModel, type, task, subType, index, count, storeParrent }) => {
+    const store = useStore(SelectAllStore);
+    useEffect(() => {
+      store.dependencyInit(selectAllModel.ranges ?? [], storeParrent.type);
+    }, []);
 
-  return (
-    <>
-      <div style={{ display: "flex" }}>
-        <TextV2
-          style={{ height: 30, fontSize: 26 }}
-          text={`Функции / ${store.getType()}`}
-        />
-        <div style={{ width: 20 }} />
-        <div style={{ cursor: "pointer" }} onClick={() => store.reset()}>
-          <Icon type={IconType.reset} />
-        </div>
-        <div style={{ width: 20 }} />
-        <div
-          onClick={() => store.validationDecorators()}
-          style={{ cursor: "pointer" }}
-        >
-          <Icon type={IconType.okV2} />
-        </div>
-      </div>
-      <div>
-        <TextV2 text="Задание: Выделите все аргументы функций" />
-      </div>
-      <div style={{ height: 5 }} />
-      <div style={{ display: "flex", height: "100%" }}>
-        <div></div>
-        <Editor
-          height="100%"
-          defaultLanguage="typescript"
-          defaultValue={selectAllModel.code}
-          onMount={(editor: monaco.editor.IStandaloneCodeEditor, _) => {
-            store.updateEditor(editor);
-            editor.onDidChangeCursorSelection((_) => {
-              store.updateLastSection(editor.getSelection()!);
-            });
-          }}
-        />
-
-        <div style={{ height: "100%", width: 500, overflow: "auto" }}>
-          {store.isValid ? (
-            <>
-              <TextV2
-                text={`Всего надо было выделить: ${store.rangesNeedToChose?.length} `}
-                style={{ marginLeft: 20, fontSize: 21 }}
-              />
-
-              <TextV2
-                text={`Правильно было выделно: ${store.rangesIsValidCount} `}
-                style={{ marginLeft: 20, fontSize: 21 }}
-              />
-              <TextV2
-                text={`Неправильно было выделено: ${store.rangesIsErrorCount} `}
-                style={{ marginLeft: 20, fontSize: 21 }}
-              />
-            </>
-          ) : (
-            <>
-              <TextV2
-                text={`Выделенные фрагменты`}
-                style={{ marginLeft: 20, fontSize: 21 }}
-              />
-            </>
-          )}
-
+    return (
+      <>
+        <div style={{ display: "flex" }}>
           <div>
-            {store.selectSectionModels.map((el, index) => (
-              <div>
-                <div
-                  style={{
-                    backgroundColor:
-                      el.status === "await"
-                        ? undefined
-                        : el.status === "Error"
-                          ? "red"
-                          : el.status === "Ok"
-                            ? "green"
-                            : undefined,
-
-                    border:
-                      el.status === "await"
-                        ? "1px solid black"
-                        : el.status === "Error"
-                          ? "1px solid white"
-                          : el.status === "Ok"
-                            ? "1px solid white"
-                            : "1px solid black",
-                    borderRadius: 4,
-                    padding: 10,
-                    margin: 20,
-                  }}
-                >
-                  <div style={{ position: "relative" }}>
-                    <div style={{ position: "absolute", right: 12 }}>
-                      <div
-                        onClick={() => store.deleteSection(index)}
-                        style={{
-                          position: "relative",
-                          cursor: "pointer",
-                          bottom: 3,
-                        }}
-                      >
-                        {el.status === "await" ? (
-                          <Icon size={25} color="red" type={IconType.backet} />
-                        ) : undefined}
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    {el.code.split("\n").map((element) => (
+            <div style={{ display: "flex", alignItems: "end" }}>
+              <TextV2
+                text={`${storeParrent.type === "экзамен" ? "Экзамен" : "Тренировка"} ${index}/${count}`}
+                style={{ height: 30, fontSize: 26, color: "#ea00ff" }}
+              />
+              {storeParrent.type === "экзамен" ? (
+                <>
+                  {new Array(5).fill(0).map((_, i) => {
+                    return (
                       <div
                         style={{
-                          fontFamily: 'Menlo, Monaco, "Courier New", monospace',
-                          color:
-                            el.status === "await"
-                              ? undefined
-                              : el.status === "Error"
-                                ? "white"
-                                : el.status === "Ok"
-                                  ? "white"
-                                  : undefined,
+                          borderRadius: "50%",
+                          border: "1px solid black",
+                          backgroundColor:
+                            i >= (storeParrent.count?.count ?? 0)
+                              ? "red"
+                              : "#55df55",
+                          width: 20,
+                          height: 20,
                         }}
-                      >
-                        {element}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                {/* <div style={{ height: 20 }} /> */}
+                      ></div>
+                    );
+                  })}
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
+            <div style={{ display: "flex" }}>
+              <TextV2
+                style={{ height: 30, fontSize: 16 }}
+                text={`${type} / ${subType}`}
+              />
+              <div style={{ width: 20 }} />
+              <div style={{ cursor: "pointer" }} onClick={() => store.reset()}>
+                <Icon type={IconType.reset} size={20} />
               </div>
-            ))}
+              <div style={{ width: 20 }} />
+              <div
+                onClick={() => store.onClickOk(storeParrent)}
+                style={{ cursor: "pointer" }}
+              >
+                <Icon type={IconType.okV2} size={20} />
+              </div>
+              <div style={{ width: 20 }} />
+              {store.type === "тест" ? (
+                <>
+                  {" "}
+                  <div
+                    onClick={() => storeParrent.onClickExam()}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <Icon type={IconType.exam} size={20} />
+                  </div>
+                </>
+              ) : (
+                <></>
+              )}
+
+              {store.nextHasVisible ? (
+                <>
+                  {" "}
+                  <div style={{ width: 20 }} />
+                  <div
+                    style={{ cursor: "pointer" }}
+                    onClick={() => storeParrent.onClickNextTask()}
+                  >
+                    <Icon type={IconType.next} size={20} />
+                  </div>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      <style>
-        {`
+        <div>
+          <TextV2 text={`Задание: ${task}`} />
+        </div>
+        <div style={{ height: 5 }} />
+        <div style={{ display: "flex", height: "100%" }}>
+          <div></div>
+          <Editor
+            height="100%"
+            defaultLanguage="typescript"
+            defaultValue={selectAllModel.code}
+            onMount={(editor: monaco.editor.IStandaloneCodeEditor, _) => {
+              store.updateEditor(editor);
+              editor.onDidChangeCursorSelection((_) => {
+                store.updateLastSection(editor.getSelection()!);
+              });
+            }}
+          />
+
+          <div style={{ height: "100%", width: 500, overflow: "auto" }}>
+            {store.isValid ? (
+              <>
+                <TextV2
+                  text={`Всего надо было выделить: ${store.rangesNeedToChose?.length} `}
+                  style={{ marginLeft: 20, fontSize: 21 }}
+                />
+
+                <TextV2
+                  text={`Правильно было выделно: ${store.rangesIsValidCount} `}
+                  style={{ marginLeft: 20, fontSize: 21 }}
+                />
+                <TextV2
+                  text={`Неправильно было выделено: ${store.rangesIsErrorCount} `}
+                  style={{ marginLeft: 20, fontSize: 21 }}
+                />
+              </>
+            ) : (
+              <>
+                <TextV2
+                  text={`Выделенные фрагменты`}
+                  style={{ marginLeft: 20, fontSize: 21 }}
+                />
+              </>
+            )}
+
+            <div>
+              {store.selectSectionModels.map((el, index) => (
+                <div>
+                  <div
+                    style={{
+                      backgroundColor:
+                        el.status === "await"
+                          ? undefined
+                          : el.status === "Error"
+                            ? "red"
+                            : el.status === "Ok"
+                              ? "green"
+                              : undefined,
+
+                      border:
+                        el.status === "await"
+                          ? "1px solid black"
+                          : el.status === "Error"
+                            ? "1px solid white"
+                            : el.status === "Ok"
+                              ? "1px solid white"
+                              : "1px solid black",
+                      borderRadius: 4,
+                      padding: 10,
+                      margin: 20,
+                    }}
+                  >
+                    <div style={{ position: "relative" }}>
+                      <div style={{ position: "absolute", right: 12 }}>
+                        <div
+                          onClick={() => store.deleteSection(index)}
+                          style={{
+                            position: "relative",
+                            cursor: "pointer",
+                            bottom: 3,
+                          }}
+                        >
+                          {el.status === "await" ? (
+                            <Icon
+                              size={25}
+                              color="red"
+                              type={IconType.backet}
+                            />
+                          ) : undefined}
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      {el.code.split("\n").map((element) => (
+                        <div
+                          style={{
+                            fontFamily:
+                              'Menlo, Monaco, "Courier New", monospace',
+                            color:
+                              el.status === "await"
+                                ? undefined
+                                : el.status === "Error"
+                                  ? "white"
+                                  : el.status === "Ok"
+                                    ? "white"
+                                    : undefined,
+                          }}
+                        >
+                          {element}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {/* <div style={{ height: 20 }} /> */}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <style>
+          {`
           .myDecorationClass {
             background-color: rgba(255, 0, 0, 0.3);
           }
@@ -448,7 +533,8 @@ export const SelectAll: React.FC<{
             background-color: #f71919c0;       
           }
         `}
-      </style>
-    </>
-  );
-});
+        </style>
+      </>
+    );
+  },
+);

@@ -7,17 +7,22 @@ import { Tasks, TasksPath } from "../../features/tasks/tasks";
 import { Token, TokenPath } from "../../features/token/token";
 import { TrainPath, Train } from "../../features/train/train";
 import type { IRouter } from "./routers";
+
 import {
-  Recognition,
-  RecognitionPath,
-} from "../../features/recognition/recognition";
-import { RecognitionCategoryPath, RecognitionCategory } from "../../features/recognition_category/recognition_category";
+  RecognitionTaskPath,
+  RecognitionTask,
+} from "../../features/recognition_task/recognition_task";
+import {
+  TaskHistory,
+  TaskHistoryPath,
+} from "../../features/task_history/task_history";
 
 export const privateRouters: IRouter[] = [
   {
     path: TasksPath,
     element: <Tasks />,
   },
+  { path: TaskHistoryPath, element: <TaskHistory /> },
   {
     path: TrainPath,
     element: <Train />,
@@ -34,6 +39,8 @@ export const privateRouters: IRouter[] = [
     path: ActivityPath + ":userId",
     element: <Activity />,
   },
-  { path: RecognitionPath, element: <Recognition /> },
-  { path: RecognitionCategoryPath, element: <RecognitionCategory /> },
+  {
+    path: RecognitionTaskPath + ":id/" + ":type",
+    element: <RecognitionTask />,
+  },
 ];

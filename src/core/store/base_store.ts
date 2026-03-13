@@ -85,7 +85,7 @@ export abstract class UiErrorState<T> extends UiLoader {
     console.log(error);
   };
   abstract init(navigate?: NavigateFunction): Promise<any>;
-  dispose() {}
+  dispose() { }
   errors: UiBaseError[] = [];
 }
 
@@ -136,7 +136,7 @@ export abstract class NavigateState extends UiErrorState<any> {
 export abstract class FormState<V> extends UiErrorState<any> {
   abstract viewModel: V;
   navigate?: NavigateFunction;
-  updateFormCallback = () => {};
+  updateFormCallback = () => { };
   updateForm(value: Partial<V>) {
     //@ts-ignore
     this.viewModel = Object.assign(this.viewModel, value);

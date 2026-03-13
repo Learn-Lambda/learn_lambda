@@ -162,7 +162,7 @@ export const Page: React.FC<{
               width: "100%",
               backgroundColor: "#F1F5F9",
             },
-            style
+            style,
           )}
         >
           {pageStore.isLoading ? <Loader /> : <>{children}</>}
